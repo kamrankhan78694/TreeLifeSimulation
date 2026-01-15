@@ -1,0 +1,31 @@
+{
+  "ui_defaults": {
+    "tree_count": 50,
+    "growth_rate": 1.0,
+    "water_level": 0.7,
+    "temperature": 20,
+    "light_intensity": 0.8
+  },
+  "stressors": {
+    "drought_threshold": 0.3,
+    "heat_stress_temp": 35,
+    "disease_base_rate": 0.02,
+    "storm_frequency": 0.05
+  },
+  "canvas_settings": {
+    "width": 1200,
+    "height": 800,
+    "background_color": "#87CEEB"
+  },
+  "hdr_parameters": {
+    "max_age": 200,
+    "senescence_start_age": 150,
+    "base_mortality_rate": 0.001
+  },
+  "config_overrides": {
+    "enable_mortality": true,
+    "enable_growth": true,
+    "enable_reproduction": false,
+    "simulation_speed": 1.0
+  }
+}
