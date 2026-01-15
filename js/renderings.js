@@ -1846,7 +1846,6 @@ function drawSnowfall(seasonProgress) {
 function drawMistLayers() {
   const ctx = renderer.ctx;
   const w = renderer.width;
-  const h = renderer.height;
   const groundY = 850;
   
   const mistIntensity = (environment.humidity - 60) / 40;
