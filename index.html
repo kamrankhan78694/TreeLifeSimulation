@@ -1,127 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tree Life Simulation</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tree Life Simulation - Hyperrealistic Edition</title>
+  <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-    <!-- Notification Toast -->
-    <div id="notification" class="notification"></div>
-    
-    <div class="container">
-        <header>
-            <h1>Tree Life Simulation</h1>
-            <p>A realistic tree simulation with mortality model and configurable parameters</p>
-        </header>
-        
-        <main>
-            <!-- Canvas Section -->
-            <section class="canvas-section">
-                <canvas id="simulationCanvas"></canvas>
-            </section>
-            
-            <!-- Controls Section -->
-            <section class="controls-section">
-                <h2>Simulation Controls</h2>
-                <div class="button-group">
-                    <button id="startSimulation">Start</button>
-                    <button id="stopSimulation" disabled>Stop</button>
-                    <button id="resetSimulation">Reset</button>
-                </div>
-                
-                <h3>Environment Parameters</h3>
-                <div class="slider-group">
-                    <label for="treeCount">
-                        Tree Count: <span id="treeCountValue">50</span>
-                    </label>
-                    <input type="range" id="treeCount" min="10" max="200" value="50">
-                </div>
-                
-                <div class="slider-group">
-                    <label for="waterLevel">
-                        Water Level: <span id="waterLevelValue">0.70</span>
-                    </label>
-                    <input type="range" id="waterLevel" min="0" max="1" step="0.01" value="0.7">
-                </div>
-                
-                <div class="slider-group">
-                    <label for="temperature">
-                        Temperature (°C): <span id="temperatureValue">20</span>
-                    </label>
-                    <input type="range" id="temperature" min="0" max="50" value="20">
-                </div>
-                
-                <div class="slider-group">
-                    <label for="growthRate">
-                        Growth Rate: <span id="growthRateValue">1.0</span>
-                    </label>
-                    <input type="range" id="growthRate" min="0" max="3" step="0.1" value="1.0">
-                </div>
-            </section>
-            
-            <!-- Variables Configuration Section -->
-            <section class="variables-section">
-                <h2>Variables Configuration</h2>
-                <p>Edit the JSON configuration below to customize simulation parameters:</p>
-                <textarea id="configTextarea" rows="20"></textarea>
-                <div class="button-group">
-                    <button id="applyConfig">Apply Configuration</button>
-                </div>
-                <div class="info-box">
-                    <h4>Configuration Guide:</h4>
-                    <ul>
-                        <li><strong>ui_defaults:</strong> Default values for UI sliders</li>
-                        <li><strong>stressors:</strong> Environmental stress thresholds</li>
-                        <li><strong>canvas_settings:</strong> Canvas dimensions and appearance</li>
-                        <li><strong>hdr_parameters:</strong> Mortality and aging parameters</li>
-                        <li><strong>config_overrides:</strong> Enable/disable simulation features</li>
-                    </ul>
-                </div>
-            </section>
-            
-            <!-- Information Section -->
-            <section class="info-section">
-                <h2>About the Simulation</h2>
-                <div class="info-box">
-                    <h3>Mortality Model</h3>
-                    <p>Trees in this simulation face realistic mortality risks:</p>
-                    <ul>
-                        <li><strong>Senescence:</strong> Age-related mortality increases after reaching senescence age</li>
-                        <li><strong>Drought:</strong> Low water levels cause drought stress and potential death</li>
-                        <li><strong>Heat Stress:</strong> High temperatures can be lethal to trees</li>
-                        <li><strong>Disease:</strong> Random disease events based on tree resistance</li>
-                        <li><strong>Storm Damage:</strong> Taller trees are more vulnerable to storm events</li>
-                        <li><strong>Poor Health:</strong> Accumulated stress can reduce health to zero</li>
-                    </ul>
-                    
-                    <h3>Visual Indicators</h3>
-                    <ul>
-                        <li>Green trees are healthy and alive</li>
-                        <li>Yellow/brown trees are stressed (low health)</li>
-                        <li>Faded brown trees are dead</li>
-                        <li>Tree size reflects age and growth conditions</li>
-                    </ul>
-                    
-                    <h3>Statistics Display</h3>
-                    <p>The white box in the top-left corner shows:</p>
-                    <ul>
-                        <li>Number of living trees</li>
-                        <li>Average age of living trees</li>
-                        <li>Total deaths and breakdown by cause</li>
-                    </ul>
-                </div>
-            </section>
-        </main>
-        
-        <footer>
-            <p>Tree Life Simulation with Mortality Model &copy; 2026</p>
-        </footer>
+  <!-- Control Panel -->
+  <div id="controls">
+    <h2>🌳 Tree Life Simulator</h2>
+    <p class="subtitle">Hyperrealistic tree growth simulation</p>
+
+    <!-- Environment Section -->
+    <div class="section">
+      <div class="section-title">🌍 Environment</div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>☀️ Sunlight <span class="tooltip" title="Photosynthetically active radiation (PAR). Trees need 20+ hours light annually to thrive.">ⓘ</span></span>
+          <span class="value" id="sunVal">70%</span>
+        </div>
+        <input type="range" id="sun" min="0" max="100" value="70">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>💧 Water <span class="tooltip" title="Soil moisture. Optimal: 50-70%. Drought < 30%; Waterlogging > 85%.">ⓘ</span></span>
+          <span class="value" id="waterVal">60%</span>
+        </div>
+        <input type="range" id="water" min="0" max="100" value="60">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>🌡️ Temperature <span class="tooltip" title="Mean annual temperature. Optimal: 15-28°C. Frost < 0°C causes damage.">ⓘ</span></span>
+          <span class="value" id="tempVal">20°C</span>
+        </div>
+        <input type="range" id="temp" min="-20" max="50" value="20">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>🪴 Soil Quality <span class="tooltip" title="Nutrient richness and pH balance. Poor soil limits growth; excellent soil accelerates it.">ⓘ</span></span>
+          <span class="value" id="soilVal">70%</span>
+        </div>
+        <input type="range" id="soil" min="0" max="100" value="70">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>💨 Wind <span class="tooltip" title="Wind speed. Strong wind (> 80) can cause branch damage. Affects transpiration.">ⓘ</span></span>
+          <span class="value" id="windVal">30%</span>
+        </div>
+        <input type="range" id="wind" min="0" max="100" value="30">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>☁️ Humidity <span class="tooltip" title="Relative humidity. Affects transpiration rates and disease risk.">ⓘ</span></span>
+          <span class="value" id="humidityVal">60%</span>
+        </div>
+        <input type="range" id="humidity" min="0" max="100" value="60">
+      </div>
     </div>
-    
-    <script src="js/tree.js"></script>
-    <script src="js/simulation.js"></script>
-    <script src="js/ui.js"></script>
+
+    <!-- Stressors -->
+    <div class="section">
+      <div class="section-title">⚠️ Stressors</div>
+      <div class="checkbox-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="disease"> 🦠 Disease
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="pests"> 🐛 Pests
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="storm"> ⛈️ Storm
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="pollution"> 💨 Pollution
+        </label>
+      </div>
+    </div>
+
+    <!-- Time Controls -->
+    <div class="section">
+      <div class="section-title">⏱️ Time</div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>Speed</span>
+          <span class="value" id="speedVal">1.0x</span>
+        </div>
+        <input type="range" id="speed" min="0" max="10" step="0.1" value="1">
+      </div>
+
+      <div class="button-row">
+        <button class="primary" id="toggle">⏸ Pause</button>
+        <button class="secondary" id="reset">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- Seed Control -->
+    <div class="section">
+      <div class="section-title">🎲 Randomness</div>
+      <div class="seed-input">
+        <input type="number" id="seed" value="12345" min="0" max="999999">
+        <button class="secondary" id="applySeed">Apply</button>
+      </div>
+    </div>
+
+    <!-- Readout -->
+    <div class="readout" id="readout">
+      <div class="readout-row">
+        <span class="readout-label">Year</span>
+        <span class="readout-value" id="rYear">0.0</span>
+      </div>
+      <div class="readout-row">
+        <span class="readout-label">Season</span>
+        <span class="readout-value" id="rSeason">Spring</span>
+      </div>
+      <div class="readout-row">
+        <span class="readout-label">Age</span>
+        <span class="readout-value" id="rAge">0 years</span>
+      </div>
+      <div class="readout-row">
+        <span class="readout-label">Health</span>
+        <span class="readout-value healthy" id="rHealth">100</span>
+      </div>
+      <div class="readout-row">
+        <span class="readout-label">Height</span>
+        <span class="readout-value" id="rHeight">0 m</span>
+      </div>
+      <div class="readout-row">
+        <span class="readout-label">DBH</span>
+        <span class="readout-value" id="rDBH">0 cm</span>
+      </div>
+      <div class="readout-row">
+        <span class="readout-label">Biomass</span>
+        <span class="readout-value" id="rBiomass">0 kg</span>
+      </div>
+      <div class="readout-row">
+        <span class="readout-label">Status</span>
+        <span class="readout-value healthy" id="rStatus">🌱 Germinating</span>
+      </div>
+    </div>
+
+    <!-- Health Graph -->
+    <div class="graph-container">
+      <div class="graph-title">Health Trajectory</div>
+      <canvas id="healthGraph" width="280" height="80"></canvas>
+    </div>
+
+    <!-- Metrics -->
+    <div class="metrics">
+      <div class="metric">
+        <span>CO₂ Stored</span>
+        <span id="metricCO2">0 kg</span>
+      </div>
+      <div class="metric">
+        <span>O₂ Produced</span>
+        <span id="metricO2">0 kg</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Canvas Container -->
+  <div id="sim">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/prng.js"></script>
+  <script src="js/tree.js"></script>
+  <script src="js/environment.js"></script>
+  <!-- Rendering modules (modularized from monolithic rendering.js) -->
+  <script src="js/rendering/core.js"></script>
+  <script src="js/rendering/atmosphere.js"></script>
+  <script src="js/rendering/terrain.js"></script>
+  <script src="js/rendering/roots.js"></script>
+  <script src="js/rendering/trunk.js"></script>
+  <script src="js/rendering/branches.js"></script>
+  <script src="js/rendering/tree.js"></script>
+  <script src="js/rendering/foliage.js"></script>
+  <script src="js/rendering/effects.js"></script>
+  <script src="js/rendering/postprocessing.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/simulation.js"></script>
 </body>
 </html>
