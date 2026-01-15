@@ -51,11 +51,13 @@ class Simulation {
     
     this.frameCount++;
     
-    // Update every frame (requestAnimationFrame ~60fps)
+    // Control simulation speed with frame timing
     const speed = this.config.config_overrides.simulation_speed || 1.0;
-    setTimeout(() => {
+    if (speed === 1.0) {
       requestAnimationFrame(() => this.loop());
-    }, (1000 / 60) / speed);
+    } else {
+      setTimeout(() => this.loop(), (1000 / 60) / speed);
+    }
   }
   
   update() {

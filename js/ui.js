@@ -4,6 +4,7 @@ class UI {
     this.config = null;
     this.simulation = null;
     this.canvas = null;
+    this.notificationElement = null;
   }
   
   async init() {
@@ -18,6 +19,17 @@ class UI {
     
     // Display initial config
     this.displayConfig();
+  }
+  
+  showNotification(message, type = 'success') {
+    if (!this.notificationElement) return;
+    
+    this.notificationElement.textContent = message;
+    this.notificationElement.className = `notification ${type} show`;
+    
+    setTimeout(() => {
+      this.notificationElement.classList.remove('show');
+    }, 3000);
   }
   
   async loadConfig() {
@@ -79,6 +91,7 @@ class UI {
     this.startButton = document.getElementById('startSimulation');
     this.stopButton = document.getElementById('stopSimulation');
     this.resetButton = document.getElementById('resetSimulation');
+    this.notificationElement = document.getElementById('notification');
     
     // Setup sliders
     this.setupSliders();
@@ -175,9 +188,9 @@ class UI {
         this.simulation.updateConfig(this.config);
       }
       
-      alert('Configuration applied successfully!');
+      this.showNotification('Configuration applied successfully!', 'success');
     } catch (error) {
-      alert('Invalid JSON: ' + error.message);
+      this.showNotification('Invalid JSON: ' + error.message, 'error');
     }
   }
   

@@ -1,4 +1,7 @@
 // Tree class with mortality model
+// Constants
+const HEALTH_TO_COLOR_MULTIPLIER = 2.55; // Converts 0-100 health to 0-255 color range
+
 class Tree {
   constructor(x, y, config = {}) {
     this.x = x;
@@ -154,7 +157,7 @@ class Tree {
       ctx.globalAlpha = 0.3;
     } else {
       // Draw living tree (green, with health indication)
-      const healthColor = Math.floor(this.health * 2.55);
+      const healthColor = Math.floor(this.health * HEALTH_TO_COLOR_MULTIPLIER);
       ctx.fillStyle = `rgb(${100 - healthColor}, ${healthColor + 100}, ${100 - healthColor})`;
       ctx.globalAlpha = 1.0;
     }
