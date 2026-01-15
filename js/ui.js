@@ -33,10 +33,53 @@ function initUI() {
   const toggleBtn = document.getElementById('toggle');
   const resetBtn = document.getElementById('reset');
   const applyBtn = document.getElementById('applySeed');
+  const reloadConfigBtn = document.getElementById('reloadConfig');
+  const applyConfigBtn = document.getElementById('applyConfig');
   
   if (toggleBtn) toggleBtn.addEventListener('click', togglePause);
   if (resetBtn) resetBtn.addEventListener('click', resetSimulation);
   if (applyBtn) applyBtn.addEventListener('click', applySeed);
+
+  if (reloadConfigBtn) {
+    reloadConfigBtn.addEventListener('click', async function() {
+      if (typeof window.reloadVariablesConfigFromFile !== 'function') {
+        showToast('❌ Config loader not available');
+        return;
+      }
+      const vars = await window.reloadVariablesConfigFromFile();
+      const textarea = document.getElementById('configTextarea');
+      if (textarea && window.variablesConfigSourceText) {
+        textarea.value = window.variablesConfigSourceText;
+      }
+      if (vars) {
+        resetSimulation();
+        showToast('✅ Reloaded variables.JSON');
+      } else {
+        showToast('ℹ️ variables.JSON not found');
+      }
+    });
+  }
+
+  if (applyConfigBtn) {
+    applyConfigBtn.addEventListener('click', function() {
+      const textarea = document.getElementById('configTextarea');
+      if (!textarea) return;
+      let obj;
+      try {
+        obj = JSON.parse(textarea.value || '{}');
+      } catch (e) {
+        showToast('❌ Invalid JSON');
+        return;
+      }
+      if (typeof window.applyVariablesConfigFromObject === 'function') {
+        window.applyVariablesConfigFromObject(obj);
+        resetSimulation();
+        showToast('✅ Config applied');
+      } else {
+        showToast('❌ Config apply not available');
+      }
+    });
+  }
   
   // Stressor checkboxes with visual feedback
   const stressors = ['disease', 'pests', 'storm', 'pollution'];

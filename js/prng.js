@@ -21,11 +21,19 @@ function initPRNG(seed) {
  * Generate next random number using linear congruential generator
  * @returns {number} Random number between 0 and 1
  */
-function random() {
+function random(min, max) {
   // Linear congruential generator (LCG)
   // Using parameters from Numerical Recipes
   prngState.state = (prngState.state * 1664525 + 1013904223) % 4294967296;
-  return prngState.state / 4294967296;
+  const r = prngState.state / 4294967296;
+
+  // Backwards-compatible overload:
+  // - random() -> [0, 1)
+  // - random(max) -> [0, max)
+  // - random(min, max) -> [min, max)
+  if (min === undefined) return r;
+  if (max === undefined) return r * min;
+  return r * (max - min) + min;
 }
 
 /**

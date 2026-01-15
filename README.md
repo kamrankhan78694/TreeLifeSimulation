@@ -4,7 +4,7 @@ A modular, vanilla HTML/CSS/JS single-page simulation of a tree’s life over ti
 
 ## Quickstart
 
-Because the app loads multiple JS modules, run it from a local web server (not `file://`).
+Because the app loads multiple JS files, run it from a local web server (not `file://`).
 
 ```bash
 cd /path/to/tree
@@ -22,22 +22,14 @@ Notes:
 ```
 .
 ├── index.html
-├── tree.html
-├── Temperature.js
-├── air.js
-├── rootDepth.js
-├── soil.js
-├── sunlight.js
-├── weather.js
-├── windflow.js
-├── sun.css
-├── styles/
-│   └── main.css
+├── variables.JSON
+├── css/
+│   └── style.css
 └── js/
     ├── config.js
     ├── environment.js
     ├── prng.js
-    ├── rendering.js
+    ├── renderings.js
     ├── simulation.js
     ├── tree.js
     └── ui.js
@@ -102,7 +94,7 @@ Reality mapping:
 - This improves simulation consistency rather than representing a specific biological phenomenon.
 
 ### 6) Rendering (HDR-like look on Canvas 2D)
-**Where:** `js/rendering.js`, `styles/main.css`
+**Where:** `js/renderings.js`, `css/style.css`
 
 The renderer focuses on “lifelike” cues rather than strict physical accuracy:
 
@@ -117,7 +109,7 @@ Reality mapping:
 - Uses perceptual tricks (contrast, bloom, layered shading, noise) to suggest physical depth and lighting.
 
 ### 7) UI + observability (making the simulation legible)
-**Where:** `index.html`, `js/ui.js`, `styles/main.css`
+**Where:** `index.html`, `js/ui.js`, `css/style.css`
 
 - Sliders/checkboxes directly map to environmental drivers and stressors.
 - Readouts summarize core state (year/season/age/health/height/DBH/biomass, etc.).
@@ -132,7 +124,7 @@ Reality mapping:
 ### `index.html`
 - The main SPA entry point (layout + controls + canvases + script includes).
 
-### `styles/main.css`
+### `css/style.css`
 - Dark “HDR-inspired” UI theme, graph styling, responsiveness, and basic accessibility media queries.
 
 ### `js/config.js`
@@ -147,7 +139,7 @@ Reality mapping:
 ### `js/tree.js`
 - Tree state + biology: morphology, biomass pools, leaf state/phenology, bark/leaf generation helpers, leaf-drop particles.
 
-### `js/rendering.js`
+### `js/renderings.js`
 - Canvas 2D renderer: sky, ground, tree geometry, foliage shading, weather particles, post processing.
 
 ### `js/ui.js`
@@ -158,12 +150,9 @@ Reality mapping:
 
 ## Legacy / alternate files
 
-The repo root also contains older single-purpose scripts and an alternate HTML file:
+This branch is intentionally minimal (single-page app driven by `index.html` + the files in `js/` and `css/`).
 
-- `tree.html` and files like `air.js`, `soil.js`, `sunlight.js`, `weather.js`, `windflow.js`, `Temperature.js`, `rootDepth.js`, `sun.css` may be earlier experiments or alternate implementations.
-- The current modular “Hyperrealistic Edition” is driven by `index.html` + the `js/` modules.
-
-If you want, these can be removed or clearly marked as legacy once you confirm `index.html` is the only entry point you plan to keep.
+If you have an older version of the project that includes files like `tree.html`, `styles/main.css`, or `js/rendering.js`, those are not part of this branch’s runtime.
 
 ## Controls
 

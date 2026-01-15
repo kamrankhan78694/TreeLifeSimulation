@@ -111,6 +111,17 @@
       </div>
     </div>
 
+    <!-- External Config (variables.JSON) -->
+    <div class="section">
+      <div class="section-title">🧩 Config</div>
+      <p class="subtitle" style="margin-top:0">Optional: edit and apply variables.JSON</p>
+      <textarea id="configTextarea" rows="8" placeholder="Loading variables.JSON (optional)…"></textarea>
+      <div class="button-row">
+        <button class="secondary" id="reloadConfig">Reload</button>
+        <button class="primary" id="applyConfig">Apply</button>
+      </div>
+    </div>
+
     <!-- Readout -->
     <div class="readout" id="readout">
       <div class="readout-row">
@@ -150,7 +161,7 @@
     <!-- Health Graph -->
     <div class="graph-container">
       <div class="graph-title">Health Trajectory</div>
-      <canvas id="healthGraph" width="280" height="80"></canvas>
+      <canvas id="healthGraph"></canvas>
     </div>
 
     <!-- Metrics -->

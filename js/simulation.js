@@ -16,6 +16,177 @@ const simulationState = {
 
 window.simulationState = simulationState;
 
+// ============================================================
+// OPTIONAL EXTERNAL CONFIG (variables.JSON)
+// ============================================================
+
+async function loadVariablesJSON() {
+  try {
+    const res = await fetch('variables.JSON', { cache: 'no-store' });
+    if (!res.ok) return null;
+    const text = await res.text();
+    return JSON.parse(text);
+  } catch (e) {
+    return null;
+  }
+}
+
+function clampNumber(value, min, max, fallback) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(max, Math.max(min, n));
+}
+
+function applyVariablesConfigFromObject(vars) {
+  if (!vars || typeof vars !== 'object') return;
+
+  // Keep a copy around for UI/debug.
+  window.variablesConfig = vars;
+  try {
+    window.variablesConfigSourceText = JSON.stringify(vars, null, 2);
+  } catch (e) {
+    // ignore
+  }
+
+  // ---- UI defaults -> DOM sliders (if present)
+  const uiDefaults = vars.ui_defaults || {};
+  const maybeSetSlider = (id, value) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.value = String(value);
+  };
+
+  if (uiDefaults.light_intensity !== undefined) {
+    maybeSetSlider('sun', clampNumber(uiDefaults.light_intensity, 0, 1, 0.7) * 100);
+  }
+  if (uiDefaults.water_level !== undefined) {
+    maybeSetSlider('water', clampNumber(uiDefaults.water_level, 0, 1, 0.6) * 100);
+  }
+  if (uiDefaults.temperature !== undefined) {
+    maybeSetSlider('temp', clampNumber(uiDefaults.temperature, -20, 50, 20));
+  }
+
+  // ---- Config overrides
+  const overrides = vars.config_overrides || {};
+  if (overrides.simulation_speed !== undefined) {
+    maybeSetSlider('speed', clampNumber(overrides.simulation_speed, 0, 10, 1));
+  }
+
+  // ---- Mortality tuning
+  const hdrParams = vars.hdr_parameters || {};
+  if (tree && tree.mortality) {
+    if (overrides.enable_mortality !== undefined) {
+      tree.mortality.enabled = !!overrides.enable_mortality;
+    }
+    if (hdrParams.max_age !== undefined) {
+      const maxAge = clampNumber(hdrParams.max_age, 1, 5000, tree.mortality.maxAge);
+      tree.mortality.maxAge = maxAge;
+      if (CONFIG && CONFIG.TREE_MAX_AGE !== undefined) {
+        CONFIG.TREE_MAX_AGE = maxAge;
+      }
+    }
+    if (hdrParams.senescence_start_age !== undefined) {
+      tree.mortality.senescenceStartAge = clampNumber(
+        hdrParams.senescence_start_age,
+        0,
+        tree.mortality.maxAge,
+        tree.mortality.senescenceStartAge
+      );
+    }
+    if (hdrParams.base_mortality_rate !== undefined) {
+      tree.mortality.baseRatePerYear = clampNumber(hdrParams.base_mortality_rate, 0, 5, tree.mortality.baseRatePerYear);
+    }
+  }
+
+  // ---- Stressors tuning
+  const stressors = vars.stressors || {};
+  if (tree && tree.mortality) {
+    if (stressors.drought_threshold !== undefined) {
+      tree.mortality.droughtThreshold = clampNumber(stressors.drought_threshold, 0, 1, tree.mortality.droughtThreshold);
+    }
+    if (stressors.heat_stress_temp !== undefined) {
+      tree.mortality.heatStressTemp = clampNumber(stressors.heat_stress_temp, -50, 100, tree.mortality.heatStressTemp);
+    }
+    if (stressors.disease_base_rate !== undefined) {
+      tree.mortality.diseaseBaseRatePerYear = clampNumber(stressors.disease_base_rate, 0, 5, tree.mortality.diseaseBaseRatePerYear);
+    }
+    if (stressors.storm_frequency !== undefined) {
+      tree.mortality.stormFrequency = clampNumber(stressors.storm_frequency, 0, 5, tree.mortality.stormFrequency);
+    }
+  }
+
+  // If UI exists, refresh visible labels/environment.
+  if (typeof updateUIDisplay === 'function') updateUIDisplay();
+  if (typeof updateEnvironmentFromUI === 'function') updateEnvironmentFromUI();
+}
+
+window.applyVariablesConfigFromObject = applyVariablesConfigFromObject;
+
+window.reloadVariablesConfigFromFile = async function reloadVariablesConfigFromFile() {
+  const vars = await loadVariablesJSON();
+  if (vars) {
+    applyVariablesConfigFromObject(vars);
+  }
+  return vars;
+};
+
+function applyMortalityModel(dtDays) {
+  if (!tree || tree.health <= 0) return;
+  if (!tree.mortality || !tree.mortality.enabled) return;
+
+  const m = tree.mortality;
+  const age = tree.age;
+
+  // Hard cap: max age reached.
+  if (Number.isFinite(m.maxAge) && age >= m.maxAge) {
+    tree.health = 0;
+    tree.deathCause = 'Old age';
+    return;
+  }
+
+  const dtYears = dtDays / CONFIG.DAYS_PER_YEAR;
+  if (dtYears <= 0) return;
+
+  let hazardPerYear = Math.max(0, m.baseRatePerYear || 0);
+
+  // Senescence: ramps up after senescenceStartAge.
+  if (Number.isFinite(m.senescenceStartAge) && Number.isFinite(m.maxAge) && age > m.senescenceStartAge) {
+    const span = Math.max(1e-6, m.maxAge - m.senescenceStartAge);
+    const t = Math.min(1, Math.max(0, (age - m.senescenceStartAge) / span));
+    hazardPerYear += 0.02 * (t * t);
+  }
+
+  // Chronic stress: high stress increases hazard.
+  const stress01 = clamp(tree.stressLevel / 100, 0, 1);
+  hazardPerYear += 0.03 * (stress01 * stress01);
+
+  // Drought / heat / disease / storm hazard components.
+  const water01 = clamp(environment.water / 100, 0, 1);
+  if (water01 < m.droughtThreshold) {
+    const droughtT = (m.droughtThreshold - water01) / Math.max(1e-6, m.droughtThreshold);
+    hazardPerYear += 0.04 * droughtT;
+  }
+  if (environment.temperature > m.heatStressTemp) {
+    const heatT = (environment.temperature - m.heatStressTemp) / 20;
+    hazardPerYear += 0.03 * clamp(heatT, 0, 2);
+  }
+  if (environment.disease) {
+    const health01 = clamp(tree.health / 100, 0, 1);
+    hazardPerYear += (m.diseaseBaseRatePerYear || 0) * (1 - health01);
+  }
+  if (environment.storm) {
+    const wind01 = clamp(environment.windSpeed / 100, 0, 1);
+    hazardPerYear += (m.stormFrequency || 0) * 0.02 * wind01;
+  }
+
+  hazardPerYear = clamp(hazardPerYear, 0, 5);
+  const pDie = 1 - Math.exp(-hazardPerYear * dtYears);
+  if (random() < pDie) {
+    tree.health = 0;
+    tree.deathCause = 'Mortality event';
+  }
+}
+
 // Health history for graph (declared in js/ui.js)
 
 /**
@@ -90,6 +261,13 @@ function updateBiology(dt) {
   
   // Update environment time
   updateEnvironmentTime(dt);
+
+  // Optional mortality model (can end the tree early)
+  applyMortalityModel(dt);
+  if (tree.health <= 0) {
+    updateLeafDrops(dt, environment.windSpeed);
+    return;
+  }
   
   // === PHOTOSYNTHESIS & CARBON ASSIMILATION ===
   const photoRate = calculatePhotosynthesis(
@@ -439,7 +617,16 @@ function animationLoop(timestamp) {
 /**
  * Initialize and start simulation
  */
-function startSimulation() {
+async function startSimulation() {
+  // Optional: load variables.JSON before initializing systems/UI.
+  const vars = await window.reloadVariablesConfigFromFile();
+  if (vars) {
+    const textarea = document.getElementById('configTextarea');
+    if (textarea && window.variablesConfigSourceText) {
+      textarea.value = window.variablesConfigSourceText;
+    }
+  }
+
   // Initialize PRNG with seed
   const seedInput = document.getElementById('seed');
   const seed = seedInput ? parseInt(seedInput.value) || 12345 : 12345;
@@ -450,6 +637,9 @@ function startSimulation() {
   initRenderer();
   initUI();
   updateEnvironmentFromUI();
+  
+  // Initialize season (environment.season must be a SEASONS object, not string)
+  updateEnvironmentTime(0);
   
   // Clear history
   healthHistory.length = 0;

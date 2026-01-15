@@ -70,7 +70,22 @@ const tree = {
   leafSenescence: false,
   
   // === SPECIES ===
-  species: 'OAK'
+  species: 'OAK',
+
+  // === MORTALITY MODEL (optional) ===
+  mortality: {
+    enabled: false,
+    baseRatePerYear: 0.001,
+    senescenceStartAge: 150,
+    maxAge: CONFIG.TREE_MAX_AGE,
+
+    // Environmental hazard knobs (used by simulation.js)
+    droughtThreshold: 0.3,      // 0-1 soil moisture threshold (matches variables.JSON)
+    heatStressTemp: 35,         // °C
+    diseaseBaseRatePerYear: 0.02,
+    stormFrequency: 0.05        // 0-1-ish, used as hazard scaling when storms are active
+  },
+  deathCause: null
 };
 
 // Particle systems
@@ -112,6 +127,7 @@ function initializeTree() {
   
   // Vitality
   tree.health = 100;
+  tree.deathCause = null;
   tree.vigor = 100;
   tree.waterContent = 100;
   tree.nutrientLevel = 100;

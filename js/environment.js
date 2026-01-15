@@ -8,7 +8,7 @@ const environment = {
   // Time tracking
   year: 0,
   dayOfYear: 0,
-  season: 'SPRING',
+  season: null,  // Set properly by updateEnvironmentTime; will be SEASONS.SPRING etc.
   hour: 12,
   
   // Environmental conditions
