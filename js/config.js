@@ -353,3 +353,6 @@ const WEATHER_TYPES = {
   SNOW: { name: 'Snow', cloudCover: 0.85, precipitation: 0.6, windMult: 0.9 },
   FOG: { name: 'Fog', cloudCover: 0.3, precipitation: 0.05, windMult: 0.3 }
 };
+
+// Alias for compatibility
+const SEASON_DEFINITIONS = SEASONS;

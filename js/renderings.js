@@ -171,7 +171,8 @@ function drawAtmosphericSky(dayOfYear, season, seasonProgress) {
   const sunHeight = Math.sin(dayProgress * Math.PI);
   
   // Get season-specific sky colors
-  const seasonDef = SEASON_DEFINITIONS[season.name.toUpperCase()];
+  const seasonKey = typeof season === 'string' ? season : season.name.toUpperCase();
+  const seasonDef = SEASON_DEFINITIONS[seasonKey];
   const skyTop = seasonDef?.sky?.topHSL || [210, 60, 70];
   const skyMid = seasonDef?.sky?.midHSL || [200, 50, 80];
   const skyBot = seasonDef?.sky?.horizonHSL || [30, 50, 85];
@@ -544,7 +545,8 @@ function drawRealisticGround(season, seasonProgress) {
   const groundY = 850;
   
   // Get season-specific colors
-  const seasonDef = SEASON_DEFINITIONS[season.name.toUpperCase()];
+  const seasonKey = typeof season === 'string' ? season : season.name.toUpperCase();
+  const seasonDef = SEASON_DEFINITIONS[seasonKey];
   const grassHSL = seasonDef?.grass?.baseHSL || [120, 50, 40];
   const soilHSL = seasonDef?.soil?.baseHSL || [25, 60, 25];
   
