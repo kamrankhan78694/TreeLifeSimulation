@@ -1064,7 +1064,6 @@ function drawFineRoots(ctx, x, y, thickness, hue, sat, light, baseAngle) {
 // ============================================================
 
 function drawHyperrealisticTree(season, seasonProgress) {
-  const ctx = renderer.ctx;
   const centerX = renderer.width / 2;
   const groundY = 850;
   
