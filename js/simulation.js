@@ -18,6 +18,53 @@ window.simulationState = simulationState;
 
 // Health history for graph (declared in js/ui.js)
 
+/**
+ * Calculate photosynthesis rate based on environmental conditions
+ */
+function calculatePhotosynthesis(sunlight, water, soilQuality) {
+  // Photosynthesis depends on light, water, and nutrients
+  const lightFactor = sunlight / 100;
+  const waterFactor = Math.min(1, water / 50);
+  const nutrientFactor = soilQuality / 100;
+  
+  // Base rate with optimal conditions
+  const baseRate = 1.0;
+  return baseRate * lightFactor * waterFactor * nutrientFactor;
+}
+
+/**
+ * Calculate total environmental stress on tree
+ */
+function calculateTotalStress() {
+  let stress = 0;
+  
+  // Water stress
+  if (environment.water < 40) {
+    stress += (40 - environment.water) / 40 * 30;
+  } else if (environment.water > 85) {
+    stress += (environment.water - 85) / 15 * 20;
+  }
+  
+  // Temperature stress
+  if (environment.temperature < 5 || environment.temperature > 35) {
+    stress += 20;
+  } else if (environment.temperature < 12 || environment.temperature > 28) {
+    stress += 10;
+  }
+  
+  // Light stress
+  if (environment.sunlight < 30) {
+    stress += (30 - environment.sunlight) / 30 * 15;
+  }
+  
+  // Stressor impacts
+  if (environment.disease) stress += 25;
+  if (environment.pests) stress += 20;
+  if (environment.storm) stress += 15;
+  if (environment.pollution) stress += 10;
+  
+  return Math.min(100, stress);
+}
 
 /**
  * Core biological simulation update (per substep)
