@@ -33,16 +33,6 @@ const environment = {
 // Make environment globally accessible
 window.environment = environment;
 
-// Season constants (matching CONFIG if it exists)
-const SEASONS = {
-  SPRING: 'SPRING',
-  SUMMER: 'SUMMER',
-  AUTUMN: 'AUTUMN',
-  WINTER: 'WINTER'
-};
-
-window.SEASONS = SEASONS;
-
 /**
  * Update environment from UI slider values
  */
@@ -73,6 +63,9 @@ function updateEnvironmentFromUI() {
   if (stormCheckbox) environment.storm = stormCheckbox.checked;
   if (pollutionCheckbox) environment.pollution = pollutionCheckbox.checked;
 }
+
+// Make function globally accessible
+window.updateEnvironmentFromUI = updateEnvironmentFromUI;
 
 /**
  * Update environment time progression
@@ -140,3 +133,9 @@ function getSeasonalGrowthMultiplier(season) {
   };
   return multipliers[season] || 0.5;
 }
+
+// Make functions globally accessible
+window.updateEnvironmentTime = updateEnvironmentTime;
+window.getSeasonDisplay = getSeasonDisplay;
+window.getSeasonProgress = getSeasonProgress;
+window.getSeasonalGrowthMultiplier = getSeasonalGrowthMultiplier;
