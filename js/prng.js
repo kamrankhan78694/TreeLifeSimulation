@@ -77,3 +77,18 @@ function randomChoice(array) {
 function getPRNGSeed() {
   return prngState.seed;
 }
+
+/**
+ * Simple 2D Perlin-like noise function
+ * @param {number} x - X coordinate
+ * @param {number} y - Y coordinate
+ * @returns {number} Noise value between -1 and 1
+ */
+function perlin2D(x, y) {
+  // Simple noise using sine waves (not true Perlin but fast and sufficient)
+  const n = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
+  return (n - Math.floor(n)) * 2 - 1;
+}
+
+// Make perlin2D globally accessible
+window.perlin2D = perlin2D;
