@@ -90,5 +90,30 @@ function perlin2D(x, y) {
   return (n - Math.floor(n)) * 2 - 1;
 }
 
-// Make perlin2D globally accessible
+/**
+ * Fractional Brownian Motion (FBM) - layered noise
+ * @param {number} x - X coordinate
+ * @param {number} y - Y coordinate
+ * @param {number} octaves - Number of noise layers (default: 4)
+ * @param {number} persistence - Amplitude multiplier per octave (default: 0.5)
+ * @returns {number} FBM noise value
+ */
+function fbm(x, y, octaves = 4, persistence = 0.5) {
+  let total = 0;
+  let frequency = 1;
+  let amplitude = 1;
+  let maxValue = 0;
+  
+  for (let i = 0; i < octaves; i++) {
+    total += perlin2D(x * frequency, y * frequency) * amplitude;
+    maxValue += amplitude;
+    amplitude *= persistence;
+    frequency *= 2;
+  }
+  
+  return total / maxValue;
+}
+
+// Make functions globally accessible
 window.perlin2D = perlin2D;
+window.fbm = fbm;
