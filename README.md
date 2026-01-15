@@ -1,111 +1,185 @@
-# Tree Life Simulation
+# Tree Life Simulation (Hyperrealistic Edition)
 
-A realistic tree life simulation featuring a comprehensive mortality model and configurable parameters through a JSON-based interface.
+A modular, vanilla HTML/CSS/JS single-page simulation of a tree’s life over time. It models seasonal cycles, weather + stressors, physiology (growth, respiration, carbon balance, phenology), and renders the scene with HDR-like post effects on a 2D canvas.
 
-## Features
+## Quickstart
 
-### Mortality Model
-The simulation implements a hazard-based mortality system with multiple death pathways:
+Because the app loads multiple JS modules, run it from a local web server (not `file://`).
 
-- **Senescence**: Age-related mortality that increases exponentially after trees reach their senescence age
-- **Drought**: Water stress-induced mortality when water levels drop below critical thresholds
-- **Heat Stress**: Temperature-related mortality when ambient temperature exceeds tolerance levels
-- **Disease**: Stochastic disease events with resistance varying by individual tree
-- **Storm Damage**: Height-dependent vulnerability to storm events
-- **Health-Based**: Accumulated stress can reduce health to lethal levels
+```bash
+cd /path/to/tree
+python3 -m http.server 8080
+```
 
-### Variables Configuration System
-Users can customize simulation parameters through an editable JSON interface:
+Open:
+- http://localhost:8080/
 
-- **UI Defaults**: Configure initial values for sliders (tree count, growth rate, water level, temperature, light intensity)
-- **Stressors**: Set thresholds for environmental stresses (drought, heat, disease, storms)
-- **Canvas Settings**: Adjust display dimensions and background color
-- **HDR Parameters**: Configure mortality parameters (max age, senescence start, base mortality rate)
-- **Config Overrides**: Enable/disable simulation features (mortality, growth, reproduction, simulation speed)
+Notes:
+- If you see a `GET /sw.js 404`, that’s typically the editor/browser probing for a service worker. The app does not require one.
 
-### Interactive UI
-- Real-time control sliders for environmental parameters
-- Start/Stop/Reset controls
-- Live statistics display showing:
-  - Living tree count
-  - Average age
-  - Total deaths
-  - Deaths by cause breakdown
-- Visual indicators:
-  - Green: Healthy trees
-  - Yellow/Brown: Stressed trees
-  - Faded Brown: Dead trees
-
-## Usage
-
-1. Open `index.html` in a web browser
-2. (Optional) Edit the variables configuration in the Variables section
-3. Click "Apply Configuration" to apply any changes
-4. Adjust environment sliders as desired
-5. Click "Start" to begin the simulation
-6. Observe tree growth, stress responses, and mortality events
-7. Use sliders to adjust environmental conditions during simulation
-
-## File Structure
+## File structure
 
 ```
-TreeLifeSimulation/
-├── index.html              # Main HTML page with UI
-├── variables.JSON          # Configuration file
-├── css/
-│   └── style.css          # Styles for the application
+.
+├── index.html
+├── tree.html
+├── Temperature.js
+├── air.js
+├── rootDepth.js
+├── soil.js
+├── sunlight.js
+├── weather.js
+├── windflow.js
+├── sun.css
+├── styles/
+│   └── main.css
 └── js/
-    ├── tree.js            # Tree class with mortality model
-    ├── simulation.js      # Simulation engine
-    └── ui.js              # UI controller
+    ├── config.js
+    ├── environment.js
+    ├── prng.js
+    ├── rendering.js
+    ├── simulation.js
+    ├── tree.js
+    └── ui.js
 ```
 
-## Configuration
+## What simulates “reality” here (and how)
 
-The `variables.JSON` file contains all configurable parameters:
+This project approximates real-world behavior using simplified but structured models.
 
-```json
-{
-  "ui_defaults": {
-    "tree_count": 50,
-    "growth_rate": 1.0,
-    "water_level": 0.7,
-    "temperature": 20,
-    "light_intensity": 0.8
-  },
-  "stressors": {
-    "drought_threshold": 0.3,
-    "heat_stress_temp": 35,
-    "disease_base_rate": 0.02,
-    "storm_frequency": 0.05
-  },
-  "canvas_settings": {
-    "width": 1200,
-    "height": 800,
-    "background_color": "#87CEEB"
-  },
-  "hdr_parameters": {
-    "max_age": 200,
-    "senescence_start_age": 150,
-    "base_mortality_rate": 0.001
-  },
-  "config_overrides": {
-    "enable_mortality": true,
-    "enable_growth": true,
-    "enable_reproduction": false,
-    "simulation_speed": 1.0
-  }
-}
-```
+### 1) Time + seasons (macro driver)
+**Where:** `js/simulation.js`, `js/environment.js`, `js/config.js`
 
-## Technical Details
+- **Seasonal cycle**: The simulation advances a “year/day” clock and selects a season definition (colors + phenology tendencies).
+- **Why it matters**: Most tree processes are seasonal (growth allocation, leaf-on/off, respiration, flowering).
 
-- Pure JavaScript implementation (no external dependencies)
-- Canvas-based rendering
-- Hazard-based mortality using probabilistic models
-- Real-time statistics tracking
-- Responsive design for different screen sizes
+### 2) Weather + climate dynamics
+**Where:** `js/environment.js`, `js/config.js`
 
-## License
+Simulates atmosphere + hydrology at a “site” level:
 
-See LICENSE file for details.
+- **Weather types** (e.g. clear, cloudy, rain, storm, snow, fog, drought) and **intensity/duration**.
+- **Wind** as speed + direction: affects transpiration stress and visual sway.
+- **Cloud cover / precipitation**: influences light availability and soil moisture.
+- **Air pressure / UV index** (simplified): used as additional stress/energy modifiers.
+- **Acclimation + memory**: keeps short histories (recent temperature/rain) to avoid purely “instantaneous” responses.
+
+Reality mapping:
+- Trees respond to *patterns* (multi-day drought, persistent heat), not just a single frame’s values.
+
+### 3) Stressors (biotic + abiotic)
+**Where:** `js/environment.js`, UI controls in `js/ui.js`
+
+- **Abiotic**: drought, cold/heat extremes, storms.
+- **Biotic**: disease and pests.
+- **Pollution**: modeled as an additional chronic stress factor.
+
+Reality mapping:
+- Stressors contribute to a combined stress load that reduces growth efficiency, increases leaf drop probability, and can accelerate decline.
+
+### 4) Tree physiology + growth (biology)
+**Where:** `js/tree.js`, `js/simulation.js`, `js/config.js`
+
+Core biological ideas represented:
+
+- **Allometric scaling**: size relationships (height/DBH/crown) grow in correlated ways rather than independently.
+- **Biomass compartments**: trunk/branches/leaves/roots (and wood sub-compartments like sapwood/heartwood) for more realistic allocation.
+- **Carbon balance**: growth depends on a simplified balance of photosynthesis input minus respiration costs.
+- **Respiration with Q10**: respiration scales with temperature (a common ecological approximation).
+- **Phenology**: seasonal switches like dormancy, bud burst, flowering, senescence.
+- **Leaf system**: leaf count/area/density and seasonal leaf drop; optional individual leaf particles for visuals.
+- **Vigor / nutrient / disease load**: internal “condition” variables that influence resilience and recovery.
+
+Reality mapping:
+- Trees are energy-limited systems; they don’t just “grow because time passed.” Growth is constrained by light, water, temperature, and stress.
+
+### 5) Physics substeps (numerical stability)
+**Where:** `js/simulation.js`
+
+- Uses a fixed-timestep style update loop (substeps) so biological/physics-like changes are stable across different frame rates.
+
+Reality mapping:
+- This improves simulation consistency rather than representing a specific biological phenomenon.
+
+### 6) Rendering (HDR-like look on Canvas 2D)
+**Where:** `js/rendering.js`, `styles/main.css`
+
+The renderer focuses on “lifelike” cues rather than strict physical accuracy:
+
+- **Atmospheric sky gradients** + procedural noise for texture.
+- **Sun position + lighting**: changes across time/season; adds highlights and dappled light.
+- **Volumetric-ish clouds and fog/mist layers**: depth cues and weather mood.
+- **Tree shading**: bark texture patterns, branch tapering, layered foliage shading (shadow/mid/highlight).
+- **Weather particles**: rain/snow, splashes, occasional lightning.
+- **Post-processing**: bloom-like glow and tone mapping concepts (exposure/gamma style controls) to mimic HDR feel.
+
+Reality mapping:
+- Uses perceptual tricks (contrast, bloom, layered shading, noise) to suggest physical depth and lighting.
+
+### 7) UI + observability (making the simulation legible)
+**Where:** `index.html`, `js/ui.js`, `styles/main.css`
+
+- Sliders/checkboxes directly map to environmental drivers and stressors.
+- Readouts summarize core state (year/season/age/health/height/DBH/biomass, etc.).
+- Graph overlays show history (health and optional environment series).
+- Keyboard shortcuts (implemented in UI) improve iteration speed.
+
+Reality mapping:
+- Not part of the ecosystem model, but crucial for interpreting cause → effect.
+
+## Module-by-module reference
+
+### `index.html`
+- The main SPA entry point (layout + controls + canvases + script includes).
+
+### `styles/main.css`
+- Dark “HDR-inspired” UI theme, graph styling, responsiveness, and basic accessibility media queries.
+
+### `js/config.js`
+- Central configuration: simulation constants, season definitions, weather types, HDR rendering parameters, species presets.
+
+### `js/prng.js`
+- Seeded randomness + procedural noise helpers (Perlin/fBm/Voronoi-style functions) used for natural variation.
+
+### `js/environment.js`
+- Environmental state evolution: season/time, weather selection, derived stress variables, evapotranspiration-like water loss.
+
+### `js/tree.js`
+- Tree state + biology: morphology, biomass pools, leaf state/phenology, bark/leaf generation helpers, leaf-drop particles.
+
+### `js/rendering.js`
+- Canvas 2D renderer: sky, ground, tree geometry, foliage shading, weather particles, post processing.
+
+### `js/ui.js`
+- Wires DOM controls to the environment, updates readouts/graphs, pause/reset/seed controls.
+
+### `js/simulation.js`
+- Main loop: fixed-step updates, applies environment + tree updates, triggers rendering + UI refresh.
+
+## Legacy / alternate files
+
+The repo root also contains older single-purpose scripts and an alternate HTML file:
+
+- `tree.html` and files like `air.js`, `soil.js`, `sunlight.js`, `weather.js`, `windflow.js`, `Temperature.js`, `rootDepth.js`, `sun.css` may be earlier experiments or alternate implementations.
+- The current modular “Hyperrealistic Edition” is driven by `index.html` + the `js/` modules.
+
+If you want, these can be removed or clearly marked as legacy once you confirm `index.html` is the only entry point you plan to keep.
+
+## Controls
+
+- **Sunlight / Water / Temperature / Soil / Wind / Humidity**: environmental drivers.
+- **Disease / Pests / Storm / Pollution**: stressor toggles.
+- **Speed**: time multiplier.
+- **Pause/Resume**: stops/starts simulation.
+- **Reset**: restarts the tree and environment.
+- **Seed**: reproduces the same procedural variation.
+
+Keyboard shortcuts (if enabled in your UI build):
+- `Space`: pause/resume
+- `R`: reset
+- `1`–`5`: quick speed presets
+
+## Performance notes
+
+- The renderer can be CPU-heavy (procedural noise + particles + post effects).
+- If you see frame drops, reduce particle counts (in `js/config.js`) or lower canvas resolution in the renderer configuration.
