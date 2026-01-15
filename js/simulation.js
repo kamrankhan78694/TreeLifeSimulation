@@ -67,6 +67,18 @@ function calculateTotalStress() {
 }
 
 /**
+ * Calculate evapotranspiration rate
+ */
+function calculateEvapotranspiration() {
+  // Simplified evapotranspiration based on temperature, wind, and humidity
+  const tempFactor = Math.max(0, environment.temperature / 30);
+  const windFactor = environment.windSpeed / 100;
+  const humidityFactor = 1 - (environment.humidity / 100);
+  
+  return tempFactor * (1 + windFactor) * humidityFactor * 0.5;
+}
+
+/**
  * Core biological simulation update (per substep)
  */
 function updateBiology(dt) {
