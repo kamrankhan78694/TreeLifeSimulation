@@ -387,7 +387,6 @@ function drawGodRays(dayOfYear) {
 // ============================================================
 
 function drawVolumetricClouds(seasonProgress, season) {
-  const ctx = renderer.ctx;
   const w = renderer.width;
   
   const cloudCount = 6;
