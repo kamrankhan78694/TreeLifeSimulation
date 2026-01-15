@@ -114,6 +114,18 @@ function fbm(x, y, octaves = 4, persistence = 0.5) {
   return total / maxValue;
 }
 
+/**
+ * Generate random value with Gaussian distribution
+ * Alias for randomNormal for compatibility
+ * @param {number} mean - Mean of the distribution (default: 0)
+ * @param {number} stdDev - Standard deviation (default: 1)
+ * @returns {number} Random value from normal distribution
+ */
+function randomGaussian(mean = 0, stdDev = 1) {
+  return randomNormal(mean, stdDev);
+}
+
 // Make functions globally accessible
 window.perlin2D = perlin2D;
 window.fbm = fbm;
+window.randomGaussian = randomGaussian;
