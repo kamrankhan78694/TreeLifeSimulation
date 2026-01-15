@@ -1246,7 +1246,6 @@ function drawBarkTexture(ctx, x, groundY, height, width, hue, sat, light) {
   ctx.globalAlpha = 0.12;
   for (let row = 0; row < 8; row++) {
     const rowY = groundY - (height / 8) * row;
-    const rowHeight = height / 8;
     const t = row / 8;
     const rowWidth = lerp(width, topWidth, t) * 0.42;
     
