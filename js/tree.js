@@ -89,8 +89,6 @@ const particles = {
  * Initialize tree to sapling state
  */
 function initializeTree() {
-  const species = TREE_SPECIES[tree.species] || TREE_SPECIES.OAK;
-  
   tree.age = 0;
   tree.daysSinceBirth = 0;
   tree.germinationDate = randomInt(60, 120); // Spring germination
@@ -496,22 +494,4 @@ function createLeafDrop(x, y, color) {
   });
 }
 
-/**
- * Update falling leaves physics
- */
-function updateLeafDrops(dt) {
-  for (let i = tree.leafDrops.length - 1; i >= 0; i--) {
-    const leaf = tree.leafDrops[i];
-    leaf.x += leaf.vx * dt;
-    leaf.y += leaf.vy * dt;
-    leaf.vx += random(-0.1, 0.1) * dt; // wind wobble
-    leaf.rotation += leaf.rotationSpeed * dt;
-    leaf.opacity = Math.max(0, leaf.opacity - dt / leaf.lifetime);
-    leaf.lifetime -= dt;
-    
-    if (leaf.lifetime <= 0) {
-      tree.leafDrops.splice(i, 1);
-    }
-  }
-}
 

@@ -187,7 +187,6 @@ function updateUIDisplay() {
 function updateReadout() {
   if (!tree || !environment) return;
   
-  const stage = getLifeStage(tree.age);
   const healthClass = getHealthClass(tree.health);
   
   // Core metrics
@@ -441,7 +440,6 @@ function drawHealthGraph() {
   
   const maxHistory = CONFIG?.MAX_HISTORY || 500;
   const startIdx = Math.max(0, healthHistory.length - maxHistory);
-  const dataLength = healthHistory.length - startIdx;
   
   // Draw environment stress area (if available)
   if (environmentHistory.stress.length >= 2) {

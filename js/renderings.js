@@ -84,9 +84,6 @@ function calculateSunPosition(dayOfYear) {
  * Draw complete scene with HDR pipeline
  */
 function renderScene(dayOfYear, seasonProgress) {
-  const ctx = renderer.ctx;
-  const w = renderer.width;
-  const h = renderer.height;
   const season = environment.season;
   
   // Update timing
@@ -180,7 +177,6 @@ function drawAtmosphericSky(dayOfYear, season, seasonProgress) {
   const skyBot = seasonDef?.sky?.horizonHSL || [30, 50, 85];
   
   // Adjust for time of day
-  const timeAdjust = sunHeight;
   const nightDarken = Math.max(0, 1 - sunHeight * 2);
   
   // Create atmospheric gradient
@@ -310,7 +306,6 @@ function drawRealisticMoon(dayOfYear) {
   if (moonVisibility < 0.1) return;
   
   const moonSize = 35;
-  const moonPhase = (dayOfYear / 29.5) % 1; // Lunar cycle
   
   // Moon glow
   const glow = ctx.createRadialGradient(moonX, moonY, 0, moonX, moonY, moonSize * 3);
@@ -353,7 +348,6 @@ function drawGodRays(dayOfYear) {
   for (let i = 0; i < rayCount; i++) {
     const angle = (i / rayCount) * Math.PI * 2 + renderer.time * 0.02;
     const rayLength = 400 + Math.sin(angle * 3 + renderer.time) * 100;
-    const rayWidth = 30 + Math.sin(angle * 5) * 15;
     
     const grad = ctx.createLinearGradient(
       sunX, sunY,
@@ -437,7 +431,6 @@ function drawCloudBlob(x, y, scale) {
 function drawStormSystem(seasonProgress) {
   const ctx = renderer.ctx;
   const w = renderer.width;
-  const h = renderer.height;
   
   // Dark storm layer
   const stormGrad = ctx.createLinearGradient(0, 0, 0, 350);
@@ -806,7 +799,6 @@ function drawDetailedRoots() {
       const emergeY = groundY + 20;
       
       // First segment curves outward
-      const midX = centerX + Math.cos(angle) * spread * 0.5;
       
       // End point deeper in soil
       const endX = centerX + Math.cos(angle) * spread;
@@ -1866,7 +1858,6 @@ function drawMistLayers() {
 function drawDustMotes(seasonProgress) {
   const ctx = renderer.ctx;
   const w = renderer.width;
-  const h = renderer.height;
   
   if (renderer.sunIntensity < 0.3) return;
   
