@@ -125,7 +125,31 @@ function randomGaussian(mean = 0, stdDev = 1) {
   return randomNormal(mean, stdDev);
 }
 
+/**
+ * Clamp value between min and max
+ * @param {number} value - Value to clamp
+ * @param {number} min - Minimum value
+ * @param {number} max - Maximum value
+ * @returns {number} Clamped value
+ */
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+/**
+ * Linear interpolation between two values
+ * @param {number} a - Start value
+ * @param {number} b - End value
+ * @param {number} t - Interpolation factor (0-1)
+ * @returns {number} Interpolated value
+ */
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
 // Make functions globally accessible
 window.perlin2D = perlin2D;
 window.fbm = fbm;
 window.randomGaussian = randomGaussian;
+window.clamp = clamp;
+window.lerp = lerp;
