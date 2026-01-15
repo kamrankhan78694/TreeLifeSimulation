@@ -36,7 +36,7 @@ class UI {
     try {
       const response = await fetch('variables.JSON');
       if (!response.ok) {
-        throw new Error('Failed to load variables.JSON');
+        throw new Error(`Failed to load variables.JSON: ${response.status} ${response.statusText}`);
       }
       this.config = await response.json();
       console.log('Configuration loaded:', this.config);

@@ -1,6 +1,11 @@
 // Tree class with mortality model
 // Constants
 const HEALTH_TO_COLOR_MULTIPLIER = 2.55; // Converts 0-100 health to 0-255 color range
+const SENESCENCE_MORTALITY_RATE = 0.1; // Base mortality rate increase from senescence
+const DROUGHT_MORTALITY_THRESHOLD = 0.7; // Water stress threshold for mortality
+const DROUGHT_MORTALITY_RATE = 0.05; // Mortality rate multiplier for drought
+const HEAT_MORTALITY_THRESHOLD = 0.8; // Heat stress threshold for mortality
+const HEAT_MORTALITY_RATE = 0.03; // Mortality rate multiplier for heat stress
 
 class Tree {
   constructor(x, y, config = {}) {
@@ -72,7 +77,7 @@ class Tree {
     // Senescence mortality (increases with age)
     if (this.age > this.senescenceStartAge) {
       const senescenceFactor = Math.pow((this.age - this.senescenceStartAge) / (this.maxAge - this.senescenceStartAge), 2);
-      mortalityHazard += senescenceFactor * 0.1;
+      mortalityHazard += senescenceFactor * SENESCENCE_MORTALITY_RATE;
       
       if (Math.random() < mortalityHazard) {
         this.die('senescence');
@@ -81,8 +86,8 @@ class Tree {
     }
     
     // Drought mortality
-    if (this.waterStress > 0.7) {
-      const droughtHazard = this.waterStress * 0.05;
+    if (this.waterStress > DROUGHT_MORTALITY_THRESHOLD) {
+      const droughtHazard = this.waterStress * DROUGHT_MORTALITY_RATE;
       if (Math.random() < droughtHazard) {
         this.die('drought');
         return true;
@@ -90,8 +95,8 @@ class Tree {
     }
     
     // Heat stress mortality
-    if (this.heatStress > 0.8) {
-      const heatHazard = this.heatStress * 0.03;
+    if (this.heatStress > HEAT_MORTALITY_THRESHOLD) {
+      const heatHazard = this.heatStress * HEAT_MORTALITY_RATE;
       if (Math.random() < heatHazard) {
         this.die('heat_stress');
         return true;
@@ -158,7 +163,10 @@ class Tree {
     } else {
       // Draw living tree (green, with health indication)
       const healthColor = Math.floor(this.health * HEALTH_TO_COLOR_MULTIPLIER);
-      ctx.fillStyle = `rgb(${100 - healthColor}, ${healthColor + 100}, ${100 - healthColor})`;
+      const red = Math.max(0, Math.min(255, 100 - healthColor));
+      const green = Math.max(0, Math.min(255, healthColor + 100));
+      const blue = Math.max(0, Math.min(255, 100 - healthColor));
+      ctx.fillStyle = `rgb(${red}, ${green}, ${blue})`;
       ctx.globalAlpha = 1.0;
     }
     

@@ -73,8 +73,10 @@ class Simulation {
       if (wasAlive && !tree.alive) {
         // Tree just died
         this.stats.totalDeaths++;
-        if (tree.deathCause) {
+        if (tree.deathCause && this.stats.deathsByCause.hasOwnProperty(tree.deathCause)) {
           this.stats.deathsByCause[tree.deathCause]++;
+        } else if (tree.deathCause) {
+          console.warn(`Unknown death cause: ${tree.deathCause}`);
         }
       }
       
