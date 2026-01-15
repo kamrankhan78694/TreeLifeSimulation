@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tree Life Simulation</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Tree Life Simulation</h1>
+            <p>A realistic tree simulation with mortality model and configurable parameters</p>
+        </header>
+        
+        <main>
+            <!-- Canvas Section -->
+            <section class="canvas-section">
+                <canvas id="simulationCanvas"></canvas>
+            </section>
+            
+            <!-- Controls Section -->
+            <section class="controls-section">
+                <h2>Simulation Controls</h2>
+                <div class="button-group">
+                    <button id="startSimulation">Start</button>
+                    <button id="stopSimulation" disabled>Stop</button>
+                    <button id="resetSimulation">Reset</button>
+                </div>
+                
+                <h3>Environment Parameters</h3>
+                <div class="slider-group">
+                    <label for="treeCount">
+                        Tree Count: <span id="treeCountValue">50</span>
+                    </label>
+                    <input type="range" id="treeCount" min="10" max="200" value="50">
+                </div>
+                
+                <div class="slider-group">
+                    <label for="waterLevel">
+                        Water Level: <span id="waterLevelValue">0.70</span>
+                    </label>
+                    <input type="range" id="waterLevel" min="0" max="1" step="0.01" value="0.7">
+                </div>
+                
+                <div class="slider-group">
+                    <label for="temperature">
+                        Temperature (°C): <span id="temperatureValue">20</span>
+                    </label>
+                    <input type="range" id="temperature" min="0" max="50" value="20">
+                </div>
+                
+                <div class="slider-group">
+                    <label for="growthRate">
+                        Growth Rate: <span id="growthRateValue">1.0</span>
+                    </label>
+                    <input type="range" id="growthRate" min="0" max="3" step="0.1" value="1.0">
+                </div>
+            </section>
+            
+            <!-- Variables Configuration Section -->
+            <section class="variables-section">
+                <h2>Variables Configuration</h2>
+                <p>Edit the JSON configuration below to customize simulation parameters:</p>
+                <textarea id="configTextarea" rows="20"></textarea>
+                <div class="button-group">
+                    <button id="applyConfig">Apply Configuration</button>
+                </div>
+                <div class="info-box">
+                    <h4>Configuration Guide:</h4>
+                    <ul>
+                        <li><strong>ui_defaults:</strong> Default values for UI sliders</li>
+                        <li><strong>stressors:</strong> Environmental stress thresholds</li>
+                        <li><strong>canvas_settings:</strong> Canvas dimensions and appearance</li>
+                        <li><strong>hdr_parameters:</strong> Mortality and aging parameters</li>
+                        <li><strong>config_overrides:</strong> Enable/disable simulation features</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- Information Section -->
+            <section class="info-section">
+                <h2>About the Simulation</h2>
+                <div class="info-box">
+                    <h3>Mortality Model</h3>
+                    <p>Trees in this simulation face realistic mortality risks:</p>
+                    <ul>
+                        <li><strong>Senescence:</strong> Age-related mortality increases after reaching senescence age</li>
+                        <li><strong>Drought:</strong> Low water levels cause drought stress and potential death</li>
+                        <li><strong>Heat Stress:</strong> High temperatures can be lethal to trees</li>
+                        <li><strong>Disease:</strong> Random disease events based on tree resistance</li>
+                        <li><strong>Storm Damage:</strong> Taller trees are more vulnerable to storm events</li>
+                        <li><strong>Poor Health:</strong> Accumulated stress can reduce health to zero</li>
+                    </ul>
+                    
+                    <h3>Visual Indicators</h3>
+                    <ul>
+                        <li>Green trees are healthy and alive</li>
+                        <li>Yellow/brown trees are stressed (low health)</li>
+                        <li>Faded brown trees are dead</li>
+                        <li>Tree size reflects age and growth conditions</li>
+                    </ul>
+                    
+                    <h3>Statistics Display</h3>
+                    <p>The white box in the top-left corner shows:</p>
+                    <ul>
+                        <li>Number of living trees</li>
+                        <li>Average age of living trees</li>
+                        <li>Total deaths and breakdown by cause</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>Tree Life Simulation with Mortality Model &copy; 2026</p>
+        </footer>
+    </div>
+    
+    <script src="js/tree.js"></script>
+    <script src="js/simulation.js"></script>
+    <script src="js/ui.js"></script>
+</body>
+</html>
