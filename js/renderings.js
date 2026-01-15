@@ -807,7 +807,6 @@ function drawDetailedRoots() {
       
       // First segment curves outward
       const midX = centerX + Math.cos(angle) * spread * 0.5;
-      const midY = groundY + 35 + depth * 0.3;
       
       // End point deeper in soil
       const endX = centerX + Math.cos(angle) * spread;
