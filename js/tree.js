@@ -104,6 +104,10 @@ const particles = {
  * Initialize tree to sapling state
  */
 function initializeTree() {
+  // Apply species-specific parameters
+  const speciesKey = tree.species || 'OAK';
+  const species = TREE_SPECIES[speciesKey] || TREE_SPECIES.OAK;
+
   tree.age = 0;
   tree.daysSinceBirth = 0;
   tree.germinationDate = randomInt(60, 120); // Spring germination
@@ -117,10 +121,10 @@ function initializeTree() {
   tree.rootSpread = tree.height * 0.5;
   tree.trunkTaper = 0.85;
   
-  // Leaves
+  // Leaves (species-specific size)
   tree.leafCount = 50;
   tree.leafArea = 0.1;
-  tree.leafSize = 1.0;
+  tree.leafSize = species.leafSize || 1.0;
   tree.foliageOpacity = 1.0;
   tree.foliageDensity = 1.0;
   tree.chlorophyllContent = 100;
@@ -418,8 +422,9 @@ function getStatusEmoji(health, age) {
 function createFallingLeaf(x, y, season) {
   if (tree.leafDrops.length >= CONFIG.PARTICLE_FALLING_LEAVES) return;
   
+  const species = TREE_SPECIES[tree.species] || TREE_SPECIES.OAK;
   const colors = season === SEASONS.AUTUMN 
-    ? ['#d4a017', '#c85a17', '#8b4513', '#ff6347', '#daa520']
+    ? (species.autumnColors || ['#d4a017', '#c85a17', '#8b4513', '#ff6347', '#daa520'])
     : ['#228b22', '#32cd32', '#6b8e23'];
   
   tree.leafDrops.push({

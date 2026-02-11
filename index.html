@@ -12,6 +12,28 @@
     <h2>🌳 Tree Life Simulator</h2>
     <p class="subtitle">Hyperrealistic tree growth simulation</p>
 
+    <!-- Species Section -->
+    <div class="section">
+      <div class="section-title">🌲 Species</div>
+      <div class="control-group">
+        <div class="control-label">
+          <span>Tree Species</span>
+          <span class="value" id="speciesName">English Oak</span>
+        </div>
+        <select id="species">
+          <option value="OAK" selected>🌳 English Oak</option>
+          <option value="MAPLE">🍁 Sugar Maple</option>
+          <option value="PINE">🌲 Scots Pine</option>
+          <option value="BIRCH">🌿 Silver Birch</option>
+          <option value="WILLOW">🌾 Weeping Willow</option>
+          <option value="REDWOOD">🏔️ Coast Redwood</option>
+        </select>
+        <div class="species-info" id="speciesInfo">
+          <span class="species-detail" id="speciesScientific">Quercus robur</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Environment Section -->
     <div class="section">
       <div class="section-title">🌍 Environment</div>
@@ -125,6 +147,10 @@
     <!-- Readout -->
     <div class="readout" id="readout">
       <div class="readout-row">
+        <span class="readout-label">Species</span>
+        <span class="readout-value" id="rSpecies">English Oak</span>
+      </div>
+      <div class="readout-row">
         <span class="readout-label">Year</span>
         <span class="readout-value" id="rYear">0.0</span>
       </div>
@@ -162,6 +188,20 @@
     <div class="graph-container">
       <div class="graph-title">Health Trajectory</div>
       <canvas id="healthGraph"></canvas>
+    </div>
+
+    <!-- Biomass Graph -->
+    <div class="graph-container">
+      <div class="graph-title">Biomass Breakdown</div>
+      <canvas id="biomassGraph"></canvas>
+    </div>
+
+    <!-- Data Export -->
+    <div class="section">
+      <div class="section-title">📊 Data Export</div>
+      <div class="button-row">
+        <button class="secondary" id="exportCSV">📥 Export CSV</button>
+      </div>
     </div>
 
     <!-- Metrics -->

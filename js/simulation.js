@@ -179,11 +179,39 @@ function applyMortalityModel(dtDays) {
     hazardPerYear += (m.stormFrequency || 0) * 0.02 * wind01;
   }
 
+  // Fire hazard: probability based on drought duration and species resistance
+  const species = TREE_SPECIES[tree.species] || TREE_SPECIES.OAK;
+  const fireResistance = species.fireResistance || 0.5;
+  if (water01 < CONFIG.FIRE_DROUGHT_THRESHOLD && environment.temperature > CONFIG.FIRE_HEAT_THRESHOLD) {
+    const droughtSeverity = (CONFIG.FIRE_DROUGHT_THRESHOLD - water01) / CONFIG.FIRE_DROUGHT_THRESHOLD;
+    const heatSeverity = clamp((environment.temperature - CONFIG.FIRE_HEAT_THRESHOLD) / 20, 0, 1);
+    hazardPerYear += 0.05 * droughtSeverity * heatSeverity * (1 - fireResistance);
+  }
+
+  // Windthrow hazard: tall/large trees more vulnerable during storms
+  const windthrowResistance = species.windthrowResistance || 0.5;
+  if (environment.storm && environment.windSpeed > CONFIG.WINDTHROW_WIND_THRESHOLD) {
+    const windSeverity = clamp((environment.windSpeed - CONFIG.WINDTHROW_WIND_THRESHOLD) / CONFIG.WINDTHROW_WIND_RANGE, 0, 1);
+    const sizeFactor = clamp(tree.height / (species.maxHeight || 40), 0, 1);
+    hazardPerYear += 0.06 * windSeverity * sizeFactor * (1 - windthrowResistance);
+  }
+
   hazardPerYear = clamp(hazardPerYear, 0, 5);
   const pDie = 1 - Math.exp(-hazardPerYear * dtYears);
   if (random() < pDie) {
     tree.health = 0;
-    tree.deathCause = 'Mortality event';
+    // Determine most likely cause
+    if (environment.storm && environment.windSpeed > CONFIG.WINDTHROW_WIND_THRESHOLD) {
+      tree.deathCause = 'Windthrow';
+    } else if (water01 < CONFIG.FIRE_DROUGHT_THRESHOLD && environment.temperature > CONFIG.FIRE_HEAT_THRESHOLD) {
+      tree.deathCause = 'Fire';
+    } else if (environment.disease) {
+      tree.deathCause = 'Disease';
+    } else if (Number.isFinite(m.senescenceStartAge) && age > m.senescenceStartAge) {
+      tree.deathCause = 'Old age';
+    } else {
+      tree.deathCause = 'Mortality event';
+    }
   }
 }
 
@@ -292,9 +320,11 @@ function updateBiology(dt) {
   const seasonGrowth = getSeasonalGrowthMultiplier(environment.season);
   
   // === DORMANCY CHECK ===
-  const isDormant = environment.season === SEASONS.WINTER || 
-                    environment.temperature < 5 ||
-                    (environment.season === SEASONS.AUTUMN && getSeasonProgress(environment.dayOfYear) > 0.7);
+  const dormancySpecies = TREE_SPECIES[tree.species] || TREE_SPECIES.OAK;
+  const speciesIsEvergreen = dormancySpecies.evergreen || false;
+  const isDormant = (!speciesIsEvergreen && environment.season === SEASONS.WINTER) || 
+                    environment.temperature < (speciesIsEvergreen ? -10 : 5) ||
+                    (!speciesIsEvergreen && environment.season === SEASONS.AUTUMN && getSeasonProgress(environment.dayOfYear) > 0.7);
   
   tree.dormant = isDormant;
   
@@ -330,13 +360,15 @@ function updateBiology(dt) {
   
   // === PHYSICAL GROWTH ===
   if (tree.health > 25 && !isDormant && netGrowthFactor > 0) {
+    const species = TREE_SPECIES[tree.species] || TREE_SPECIES.OAK;
+    const speciesGrowthRate = species.growthRate || 1.0;
     const healthFactor = tree.health / 100;
     const vigorFactor = tree.vigor / 100;
-    const ageFactor = Math.max(0.1, 1 - tree.age / 200);
-    const growthRate = netGrowthFactor * healthFactor * vigorFactor * ageFactor;
+    const ageFactor = Math.max(0.1, 1 - tree.age / (species.maxAge * 0.4));
+    const growthRate = netGrowthFactor * healthFactor * vigorFactor * ageFactor * speciesGrowthRate;
     
     // Height growth (allometric: slows with size)
-    const heightLimit = CONFIG.TREE_MAX_HEIGHT;
+    const heightLimit = species.maxHeight || CONFIG.TREE_MAX_HEIGHT;
     const heightSaturation = Math.pow(1 - (tree.height / heightLimit), 2);
     const heightGrowth = growthRate * CONFIG.HEIGHT_GROWTH_FACTOR * heightSaturation;
     tree.height = Math.min(heightLimit, tree.height + heightGrowth * dt);
@@ -382,7 +414,16 @@ function updateBiology(dt) {
   tree.waterTranspired += evapotranspiration * dt;
   
   // === CHLOROPHYLL CONTENT ===
-  if (environment.season === SEASONS.AUTUMN) {
+  const currentSpecies = TREE_SPECIES[tree.species] || TREE_SPECIES.OAK;
+  const currentIsEvergreen = currentSpecies.evergreen || false;
+  if (currentIsEvergreen) {
+    // Evergreens maintain chlorophyll year-round with slight seasonal dip
+    if (environment.season === SEASONS.WINTER) {
+      tree.chlorophyllContent = Math.max(50, tree.chlorophyllContent - dt * 0.5);
+    } else {
+      tree.chlorophyllContent = Math.min(100, tree.chlorophyllContent + dt * 2);
+    }
+  } else if (environment.season === SEASONS.AUTUMN) {
     const progress = getSeasonProgress(environment.dayOfYear);
     tree.chlorophyllContent = Math.max(0, 100 * (1 - progress));
   } else if (environment.season === SEASONS.SPRING) {
@@ -532,24 +573,39 @@ function updateFoliage(dt) {
   let targetOpacity = tree.health / 100;
   let targetDensity = tree.health / 100;
   
+  const species = TREE_SPECIES[tree.species] || TREE_SPECIES.OAK;
+  const isEvergreen = species.evergreen || false;
   const seasonProgress = getSeasonProgress(environment.dayOfYear);
   
   switch (environment.season) {
     case SEASONS.WINTER:
-      targetOpacity *= 0.05;
-      targetDensity *= 0.1;
+      if (isEvergreen) {
+        targetOpacity *= 0.7;
+        targetDensity *= 0.8;
+      } else {
+        targetOpacity *= 0.05;
+        targetDensity *= 0.1;
+      }
       break;
       
     case SEASONS.AUTUMN:
-      // Gradual leaf loss
-      const autumnFade = 1 - Math.pow(seasonProgress, 1.5);
-      targetOpacity *= autumnFade;
-      targetDensity *= autumnFade;
+      if (isEvergreen) {
+        targetOpacity *= 0.8;
+        targetDensity *= 0.85;
+      } else {
+        // Gradual leaf loss — species dropRate controls how late leaves are retained
+        // Lower autumnLeafDrop means earlier/faster shedding
+        const dropRate = species.autumnLeafDrop || 0.5;
+        const autumnFade = 1 - Math.pow(seasonProgress, 1.5) * (1 - dropRate * 0.3);
+        targetOpacity *= autumnFade;
+        targetDensity *= autumnFade;
+      }
       break;
       
     case SEASONS.SPRING:
-      // Leaf emergence
-      const springGrowth = Math.pow(seasonProgress, 0.7);
+      // Leaf emergence — species leafOut controls timing
+      const leafOutRate = isEvergreen ? 0.8 : (species.springLeafOut || 0.3);
+      const springGrowth = Math.pow(seasonProgress, 0.7) * (1 - leafOutRate) + leafOutRate;
       targetOpacity *= springGrowth;
       targetDensity *= 0.4 + springGrowth * 0.6;
       break;
@@ -614,6 +670,7 @@ function animationLoop(timestamp) {
   // Update UI
   updateReadout();
   drawHealthGraph();
+  drawBiomassGraph();
   
   // FPS tracking
   simulationState.frameCount++;
@@ -650,6 +707,9 @@ async function startSimulation() {
   
   // Initialize season (environment.season must be a SEASONS object, not string)
   updateEnvironmentTime(0);
+  
+  // Initialize species display
+  updateSpeciesDisplay();
   
   // Clear history
   healthHistory.length = 0;
