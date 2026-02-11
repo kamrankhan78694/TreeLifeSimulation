@@ -4,23 +4,53 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tree Life Simulation - Hyperrealistic Edition</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'panel': 'rgba(17, 24, 39, 0.94)',
+            'panel-2': 'rgba(31, 41, 55, 0.6)',
+            'sim-bg': '#0b1220',
+            'success': '#22c55e',
+            'warning': '#f59e0b',
+            'error': '#ef4444',
+            'stable-color': '#84cc16',
+            'recovering-color': '#eab308',
+          },
+          width: {
+            'panel': '21.25rem',
+          },
+          spacing: {
+            'panel-gap': '1rem',
+          },
+          borderRadius: {
+            'sm-custom': '0.5rem',
+            'md-custom': '0.75rem',
+            'lg-custom': '1rem',
+          },
+        }
+      }
+    }
+  </script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <!-- Control Panel -->
-  <div id="controls">
-    <h2>🌳 Tree Life Simulator</h2>
-    <p class="subtitle">Hyperrealistic tree growth simulation</p>
+  <div id="controls" class="fixed top-4 left-4 bottom-4 w-[21.25rem] p-4 overflow-y-auto overflow-x-hidden border border-white/10 rounded-2xl bg-[rgba(17,24,39,0.94)] backdrop-blur-[16px] shadow-[0_16px_48px_rgba(0,0,0,0.5)] z-[100] scroll-smooth overscroll-contain">
+    <h2 class="text-[1.0625rem] font-bold -tracking-[0.01em] mb-1 text-white/[0.92]">🌳 Tree Life Simulator</h2>
+    <p class="text-white/60 text-[0.6875rem] mb-3.5 leading-[1.4]">Hyperrealistic tree growth simulation</p>
 
     <!-- Species Section -->
-    <div class="section">
-      <div class="section-title">🌲 Species</div>
-      <div class="control-group">
-        <div class="control-label">
+    <div class="border border-white/10 rounded-xl bg-[rgba(31,41,55,0.6)] p-3 mb-3">
+      <div class="font-semibold text-xs text-white/85 mb-2.5 uppercase tracking-[0.04em]">🌲 Species</div>
+      <div class="p-2.5 border border-white/[0.06] rounded-lg bg-black/20 mb-2 last:mb-0">
+        <div class="flex justify-between items-center gap-2 text-xs text-white/85 mb-2">
           <span>Tree Species</span>
-          <span class="value" id="speciesName">English Oak</span>
+          <span class="text-white/[0.92] font-semibold tabular-nums min-w-[2.625rem] text-right" id="speciesName">English Oak</span>
         </div>
-        <select id="species">
+        <select id="species" class="w-full border border-white/[0.14] bg-black/[0.18] text-white/[0.92] py-2.5 px-3 rounded-lg text-[0.8125rem] outline-none cursor-pointer transition-colors mb-1.5 focus:border-blue-500/60">
           <option value="OAK" selected>🌳 English Oak</option>
           <option value="MAPLE">🍁 Sugar Maple</option>
           <option value="PINE">🌲 Scots Pine</option>
@@ -28,198 +58,198 @@
           <option value="WILLOW">🌾 Weeping Willow</option>
           <option value="REDWOOD">🏔️ Coast Redwood</option>
         </select>
-        <div class="species-info" id="speciesInfo">
-          <span class="species-detail" id="speciesScientific">Quercus robur</span>
+        <div class="mt-1" id="speciesInfo">
+          <span class="text-white/60 text-[0.6875rem] italic" id="speciesScientific">Quercus robur</span>
         </div>
       </div>
     </div>
 
     <!-- Environment Section -->
-    <div class="section">
-      <div class="section-title">🌍 Environment</div>
+    <div class="border border-white/10 rounded-xl bg-[rgba(31,41,55,0.6)] p-3 mb-3">
+      <div class="font-semibold text-xs text-white/85 mb-2.5 uppercase tracking-[0.04em]">🌍 Environment</div>
 
-      <div class="control-group">
-        <div class="control-label">
-          <span>☀️ Sunlight <span class="tooltip" title="Photosynthetically active radiation (PAR). Trees need 20+ hours light annually to thrive.">ⓘ</span></span>
-          <span class="value" id="sunVal">70%</span>
+      <div class="p-2.5 border border-white/[0.06] rounded-lg bg-black/20 mb-2 last:mb-0">
+        <div class="flex justify-between items-center gap-2 text-xs text-white/85 mb-2">
+          <span>☀️ Sunlight <span class="text-white/40 cursor-help font-semibold text-[0.6875rem] ml-1 transition-colors duration-[120ms] hover:text-white/70" title="Photosynthetically active radiation (PAR). Trees need 20+ hours light annually to thrive.">ⓘ</span></span>
+          <span class="text-white/[0.92] font-semibold tabular-nums min-w-[2.625rem] text-right" id="sunVal">70%</span>
         </div>
         <input type="range" id="sun" min="0" max="100" value="70">
       </div>
 
-      <div class="control-group">
-        <div class="control-label">
-          <span>💧 Water <span class="tooltip" title="Soil moisture. Optimal: 50-70%. Drought < 30%; Waterlogging > 85%.">ⓘ</span></span>
-          <span class="value" id="waterVal">60%</span>
+      <div class="p-2.5 border border-white/[0.06] rounded-lg bg-black/20 mb-2 last:mb-0">
+        <div class="flex justify-between items-center gap-2 text-xs text-white/85 mb-2">
+          <span>💧 Water <span class="text-white/40 cursor-help font-semibold text-[0.6875rem] ml-1 transition-colors duration-[120ms] hover:text-white/70" title="Soil moisture. Optimal: 50-70%. Drought < 30%; Waterlogging > 85%.">ⓘ</span></span>
+          <span class="text-white/[0.92] font-semibold tabular-nums min-w-[2.625rem] text-right" id="waterVal">60%</span>
         </div>
         <input type="range" id="water" min="0" max="100" value="60">
       </div>
 
-      <div class="control-group">
-        <div class="control-label">
-          <span>🌡️ Temperature <span class="tooltip" title="Mean annual temperature. Optimal: 15-28°C. Frost < 0°C causes damage.">ⓘ</span></span>
-          <span class="value" id="tempVal">20°C</span>
+      <div class="p-2.5 border border-white/[0.06] rounded-lg bg-black/20 mb-2 last:mb-0">
+        <div class="flex justify-between items-center gap-2 text-xs text-white/85 mb-2">
+          <span>🌡️ Temperature <span class="text-white/40 cursor-help font-semibold text-[0.6875rem] ml-1 transition-colors duration-[120ms] hover:text-white/70" title="Mean annual temperature. Optimal: 15-28°C. Frost < 0°C causes damage.">ⓘ</span></span>
+          <span class="text-white/[0.92] font-semibold tabular-nums min-w-[2.625rem] text-right" id="tempVal">20°C</span>
         </div>
         <input type="range" id="temp" min="-20" max="50" value="20">
       </div>
 
-      <div class="control-group">
-        <div class="control-label">
-          <span>🪴 Soil Quality <span class="tooltip" title="Nutrient richness and pH balance. Poor soil limits growth; excellent soil accelerates it.">ⓘ</span></span>
-          <span class="value" id="soilVal">70%</span>
+      <div class="p-2.5 border border-white/[0.06] rounded-lg bg-black/20 mb-2 last:mb-0">
+        <div class="flex justify-between items-center gap-2 text-xs text-white/85 mb-2">
+          <span>🪴 Soil Quality <span class="text-white/40 cursor-help font-semibold text-[0.6875rem] ml-1 transition-colors duration-[120ms] hover:text-white/70" title="Nutrient richness and pH balance. Poor soil limits growth; excellent soil accelerates it.">ⓘ</span></span>
+          <span class="text-white/[0.92] font-semibold tabular-nums min-w-[2.625rem] text-right" id="soilVal">70%</span>
         </div>
         <input type="range" id="soil" min="0" max="100" value="70">
       </div>
 
-      <div class="control-group">
-        <div class="control-label">
-          <span>💨 Wind <span class="tooltip" title="Wind speed. Strong wind (> 80) can cause branch damage. Affects transpiration.">ⓘ</span></span>
-          <span class="value" id="windVal">30%</span>
+      <div class="p-2.5 border border-white/[0.06] rounded-lg bg-black/20 mb-2 last:mb-0">
+        <div class="flex justify-between items-center gap-2 text-xs text-white/85 mb-2">
+          <span>💨 Wind <span class="text-white/40 cursor-help font-semibold text-[0.6875rem] ml-1 transition-colors duration-[120ms] hover:text-white/70" title="Wind speed. Strong wind (> 80) can cause branch damage. Affects transpiration.">ⓘ</span></span>
+          <span class="text-white/[0.92] font-semibold tabular-nums min-w-[2.625rem] text-right" id="windVal">30%</span>
         </div>
         <input type="range" id="wind" min="0" max="100" value="30">
       </div>
 
-      <div class="control-group">
-        <div class="control-label">
-          <span>☁️ Humidity <span class="tooltip" title="Relative humidity. Affects transpiration rates and disease risk.">ⓘ</span></span>
-          <span class="value" id="humidityVal">60%</span>
+      <div class="p-2.5 border border-white/[0.06] rounded-lg bg-black/20 mb-2 last:mb-0">
+        <div class="flex justify-between items-center gap-2 text-xs text-white/85 mb-2">
+          <span>☁️ Humidity <span class="text-white/40 cursor-help font-semibold text-[0.6875rem] ml-1 transition-colors duration-[120ms] hover:text-white/70" title="Relative humidity. Affects transpiration rates and disease risk.">ⓘ</span></span>
+          <span class="text-white/[0.92] font-semibold tabular-nums min-w-[2.625rem] text-right" id="humidityVal">60%</span>
         </div>
         <input type="range" id="humidity" min="0" max="100" value="60">
       </div>
     </div>
 
     <!-- Stressors -->
-    <div class="section">
-      <div class="section-title">⚠️ Stressors</div>
-      <div class="checkbox-group">
-        <label class="checkbox-label">
+    <div class="border border-white/10 rounded-xl bg-[rgba(31,41,55,0.6)] p-3 mb-3">
+      <div class="font-semibold text-xs text-white/85 mb-2.5 uppercase tracking-[0.04em]">⚠️ Stressors</div>
+      <div class="grid grid-cols-2 gap-2">
+        <label class="checkbox-label flex items-center gap-2 py-2 px-2.5 border border-white/10 rounded-lg bg-black/[0.14] text-xs text-white/75 cursor-pointer select-none transition-colors">
           <input type="checkbox" id="disease"> 🦠 Disease
         </label>
-        <label class="checkbox-label">
+        <label class="checkbox-label flex items-center gap-2 py-2 px-2.5 border border-white/10 rounded-lg bg-black/[0.14] text-xs text-white/75 cursor-pointer select-none transition-colors">
           <input type="checkbox" id="pests"> 🐛 Pests
         </label>
-        <label class="checkbox-label">
+        <label class="checkbox-label flex items-center gap-2 py-2 px-2.5 border border-white/10 rounded-lg bg-black/[0.14] text-xs text-white/75 cursor-pointer select-none transition-colors">
           <input type="checkbox" id="storm"> ⛈️ Storm
         </label>
-        <label class="checkbox-label">
+        <label class="checkbox-label flex items-center gap-2 py-2 px-2.5 border border-white/10 rounded-lg bg-black/[0.14] text-xs text-white/75 cursor-pointer select-none transition-colors">
           <input type="checkbox" id="pollution"> 💨 Pollution
         </label>
       </div>
     </div>
 
     <!-- Time Controls -->
-    <div class="section">
-      <div class="section-title">⏱️ Time</div>
+    <div class="border border-white/10 rounded-xl bg-[rgba(31,41,55,0.6)] p-3 mb-3">
+      <div class="font-semibold text-xs text-white/85 mb-2.5 uppercase tracking-[0.04em]">⏱️ Time</div>
 
-      <div class="control-group">
-        <div class="control-label">
+      <div class="p-2.5 border border-white/[0.06] rounded-lg bg-black/20 mb-2 last:mb-0">
+        <div class="flex justify-between items-center gap-2 text-xs text-white/85 mb-2">
           <span>Speed</span>
-          <span class="value" id="speedVal">1.0x</span>
+          <span class="text-white/[0.92] font-semibold tabular-nums min-w-[2.625rem] text-right" id="speedVal">1.0x</span>
         </div>
         <input type="range" id="speed" min="0" max="10" step="0.1" value="1">
       </div>
 
-      <div class="button-row">
-        <button class="primary" id="toggle">⏸ Pause</button>
-        <button class="secondary" id="reset">↺ Reset</button>
+      <div class="flex gap-2">
+        <button class="btn btn-primary flex-1" id="toggle">⏸ Pause</button>
+        <button class="btn btn-secondary flex-1" id="reset">↺ Reset</button>
       </div>
     </div>
 
     <!-- Seed Control -->
-    <div class="section">
-      <div class="section-title">🎲 Randomness</div>
-      <div class="seed-input">
-        <input type="number" id="seed" value="12345" min="0" max="999999">
-        <button class="secondary" id="applySeed">Apply</button>
+    <div class="border border-white/10 rounded-xl bg-[rgba(31,41,55,0.6)] p-3 mb-3">
+      <div class="font-semibold text-xs text-white/85 mb-2.5 uppercase tracking-[0.04em]">🎲 Randomness</div>
+      <div class="flex gap-2">
+        <input type="number" id="seed" value="12345" min="0" max="999999" class="flex-1 min-w-0 border border-white/[0.14] bg-black/[0.18] text-white/[0.92] py-2.5 px-3 rounded-lg text-[0.8125rem] tabular-nums outline-none transition-colors focus:border-blue-500/60">
+        <button class="btn btn-secondary" id="applySeed">Apply</button>
       </div>
     </div>
 
     <!-- External Config (variables.JSON) -->
-    <div class="section">
-      <div class="section-title">🧩 Config</div>
-      <p class="subtitle" style="margin-top:0">Optional: edit and apply variables.JSON</p>
-      <textarea id="configTextarea" rows="8" placeholder="Loading variables.JSON (optional)…"></textarea>
-      <div class="button-row">
-        <button class="secondary" id="reloadConfig">Reload</button>
-        <button class="primary" id="applyConfig">Apply</button>
+    <div class="border border-white/10 rounded-xl bg-[rgba(31,41,55,0.6)] p-3 mb-3">
+      <div class="font-semibold text-xs text-white/85 mb-2.5 uppercase tracking-[0.04em]">🧩 Config</div>
+      <p class="text-white/60 text-[0.6875rem] leading-[1.4] !mt-0">Optional: edit and apply variables.JSON</p>
+      <textarea id="configTextarea" rows="8" placeholder="Loading variables.JSON (optional)…" class="w-full border border-white/[0.14] bg-black/[0.18] text-white/90 py-2.5 px-3 rounded-lg font-mono text-[0.6875rem] leading-[1.4] resize-y mb-2.5 outline-none transition-colors focus:border-blue-500/60"></textarea>
+      <div class="flex gap-2">
+        <button class="btn btn-secondary" id="reloadConfig">Reload</button>
+        <button class="btn btn-primary" id="applyConfig">Apply</button>
       </div>
     </div>
 
     <!-- Readout -->
-    <div class="readout" id="readout">
-      <div class="readout-row">
-        <span class="readout-label">Species</span>
+    <div class="border border-white/[0.12] rounded-xl bg-black/[0.16] p-2.5 mb-3" id="readout">
+      <div class="flex justify-between items-center py-[0.3125rem] px-1 border-b border-white/[0.05] last:border-b-0">
+        <span class="text-white/60 text-[0.6875rem]">Species</span>
         <span class="readout-value" id="rSpecies">English Oak</span>
       </div>
-      <div class="readout-row">
-        <span class="readout-label">Year</span>
+      <div class="flex justify-between items-center py-[0.3125rem] px-1 border-b border-white/[0.05] last:border-b-0">
+        <span class="text-white/60 text-[0.6875rem]">Year</span>
         <span class="readout-value" id="rYear">0.0</span>
       </div>
-      <div class="readout-row">
-        <span class="readout-label">Season</span>
+      <div class="flex justify-between items-center py-[0.3125rem] px-1 border-b border-white/[0.05] last:border-b-0">
+        <span class="text-white/60 text-[0.6875rem]">Season</span>
         <span class="readout-value" id="rSeason">Spring</span>
       </div>
-      <div class="readout-row">
-        <span class="readout-label">Age</span>
+      <div class="flex justify-between items-center py-[0.3125rem] px-1 border-b border-white/[0.05] last:border-b-0">
+        <span class="text-white/60 text-[0.6875rem]">Age</span>
         <span class="readout-value" id="rAge">0 years</span>
       </div>
-      <div class="readout-row">
-        <span class="readout-label">Health</span>
+      <div class="flex justify-between items-center py-[0.3125rem] px-1 border-b border-white/[0.05] last:border-b-0">
+        <span class="text-white/60 text-[0.6875rem]">Health</span>
         <span class="readout-value healthy" id="rHealth">100</span>
       </div>
-      <div class="readout-row">
-        <span class="readout-label">Height</span>
+      <div class="flex justify-between items-center py-[0.3125rem] px-1 border-b border-white/[0.05] last:border-b-0">
+        <span class="text-white/60 text-[0.6875rem]">Height</span>
         <span class="readout-value" id="rHeight">0 m</span>
       </div>
-      <div class="readout-row">
-        <span class="readout-label">DBH</span>
+      <div class="flex justify-between items-center py-[0.3125rem] px-1 border-b border-white/[0.05] last:border-b-0">
+        <span class="text-white/60 text-[0.6875rem]">DBH</span>
         <span class="readout-value" id="rDBH">0 cm</span>
       </div>
-      <div class="readout-row">
-        <span class="readout-label">Biomass</span>
+      <div class="flex justify-between items-center py-[0.3125rem] px-1 border-b border-white/[0.05] last:border-b-0">
+        <span class="text-white/60 text-[0.6875rem]">Biomass</span>
         <span class="readout-value" id="rBiomass">0 kg</span>
       </div>
-      <div class="readout-row">
-        <span class="readout-label">Status</span>
+      <div class="flex justify-between items-center py-[0.3125rem] px-1 border-b border-white/[0.05] last:border-b-0">
+        <span class="text-white/60 text-[0.6875rem]">Status</span>
         <span class="readout-value healthy" id="rStatus">🌱 Germinating</span>
       </div>
     </div>
 
     <!-- Health Graph -->
-    <div class="graph-container">
-      <div class="graph-title">Health Trajectory</div>
-      <canvas id="healthGraph"></canvas>
+    <div class="border border-white/[0.12] rounded-xl bg-black/[0.16] p-2.5 mb-3">
+      <div class="text-white/70 font-semibold text-[0.6875rem] uppercase tracking-[0.03em] mb-2">Health Trajectory</div>
+      <canvas id="healthGraph" class="block w-full h-[4.375rem] rounded-lg"></canvas>
     </div>
 
     <!-- Biomass Graph -->
-    <div class="graph-container">
-      <div class="graph-title">Biomass Breakdown</div>
-      <canvas id="biomassGraph"></canvas>
+    <div class="border border-white/[0.12] rounded-xl bg-black/[0.16] p-2.5 mb-3">
+      <div class="text-white/70 font-semibold text-[0.6875rem] uppercase tracking-[0.03em] mb-2">Biomass Breakdown</div>
+      <canvas id="biomassGraph" class="block w-full h-[4.375rem] rounded-lg"></canvas>
     </div>
 
     <!-- Data Export -->
-    <div class="section">
-      <div class="section-title">📊 Data Export</div>
-      <div class="button-row">
-        <button class="secondary" id="exportCSV">📥 Export CSV</button>
+    <div class="border border-white/10 rounded-xl bg-[rgba(31,41,55,0.6)] p-3 mb-3">
+      <div class="font-semibold text-xs text-white/85 mb-2.5 uppercase tracking-[0.04em]">📊 Data Export</div>
+      <div class="flex gap-2">
+        <button class="btn btn-secondary" id="exportCSV">📥 Export CSV</button>
       </div>
     </div>
 
     <!-- Metrics -->
-    <div class="metrics">
-      <div class="metric">
-        <span>CO₂ Stored</span>
-        <span id="metricCO2">0 kg</span>
+    <div class="grid grid-cols-2 gap-2">
+      <div class="border border-white/10 rounded-lg bg-black/[0.14] p-2.5 flex flex-col gap-1">
+        <span class="text-white/60 text-[0.625rem] uppercase tracking-[0.03em]">CO₂ Stored</span>
+        <span class="text-white/[0.92] font-bold text-sm tabular-nums" id="metricCO2">0 kg</span>
       </div>
-      <div class="metric">
-        <span>O₂ Produced</span>
-        <span id="metricO2">0 kg</span>
+      <div class="border border-white/10 rounded-lg bg-black/[0.14] p-2.5 flex flex-col gap-1">
+        <span class="text-white/60 text-[0.625rem] uppercase tracking-[0.03em]">O₂ Produced</span>
+        <span class="text-white/[0.92] font-bold text-sm tabular-nums" id="metricO2">0 kg</span>
       </div>
     </div>
   </div>
 
   <!-- Canvas Container -->
-  <div id="sim">
-    <canvas id="canvas"></canvas>
+  <div id="sim" class="fixed top-0 right-0 bottom-0 left-[calc(21.25rem+2rem)]">
+    <canvas id="canvas" class="block w-full h-full"></canvas>
   </div>
 
   <!-- Scripts -->
