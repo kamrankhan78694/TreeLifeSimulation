@@ -287,7 +287,11 @@ const TREE_SPECIES = {
     autumnColors: ['#d4a017', '#c85a17', '#8b4513', '#a0522d'],
     crownShape: 'rounded',
     droughtTolerance: 0.7,
-    frostTolerance: 0.8
+    frostTolerance: 0.8,
+    fireResistance: 0.6,
+    windthrowResistance: 0.7,
+    springLeafOut: 0.3,
+    autumnLeafDrop: 0.5
   },
   MAPLE: {
     name: 'Sugar Maple',
@@ -303,7 +307,11 @@ const TREE_SPECIES = {
     autumnColors: ['#ff4500', '#dc143c', '#ff6347', '#ffd700'],
     crownShape: 'oval',
     droughtTolerance: 0.5,
-    frostTolerance: 0.9
+    frostTolerance: 0.9,
+    fireResistance: 0.4,
+    windthrowResistance: 0.6,
+    springLeafOut: 0.25,
+    autumnLeafDrop: 0.4
   },
   PINE: {
     name: 'Scots Pine',
@@ -320,7 +328,11 @@ const TREE_SPECIES = {
     crownShape: 'conical',
     droughtTolerance: 0.8,
     frostTolerance: 0.95,
-    evergreen: true
+    evergreen: true,
+    fireResistance: 0.3,
+    windthrowResistance: 0.5,
+    springLeafOut: 0.1,
+    autumnLeafDrop: 0.9
   },
   BIRCH: {
     name: 'Silver Birch',
@@ -336,7 +348,52 @@ const TREE_SPECIES = {
     autumnColors: ['#ffd700', '#ffcc00', '#daa520'],
     crownShape: 'weeping',
     droughtTolerance: 0.4,
-    frostTolerance: 0.95
+    frostTolerance: 0.95,
+    fireResistance: 0.2,
+    windthrowResistance: 0.4,
+    springLeafOut: 0.2,
+    autumnLeafDrop: 0.35
+  },
+  WILLOW: {
+    name: 'Weeping Willow',
+    scientificName: 'Salix babylonica',
+    maxHeight: 20,
+    maxAge: 75,
+    growthRate: 1.5,
+    leafShape: 'lanceolate',
+    leafSize: 0.6,
+    barkTexture: 'ridged',
+    barkColor: '#6b5b4a',
+    woodDensity: 450,
+    autumnColors: ['#d4c85a', '#c8b84a', '#b8a040'],
+    crownShape: 'weeping',
+    droughtTolerance: 0.3,
+    frostTolerance: 0.6,
+    fireResistance: 0.2,
+    windthrowResistance: 0.5,
+    springLeafOut: 0.15,
+    autumnLeafDrop: 0.55
+  },
+  REDWOOD: {
+    name: 'Coast Redwood',
+    scientificName: 'Sequoia sempervirens',
+    maxHeight: 80,
+    maxAge: 2000,
+    growthRate: 0.5,
+    leafShape: 'needle',
+    leafSize: 0.25,
+    barkTexture: 'deeply_furrowed',
+    barkColor: '#8b3a2a',
+    woodDensity: 450,
+    autumnColors: ['#2d5a27'],
+    crownShape: 'conical',
+    droughtTolerance: 0.6,
+    frostTolerance: 0.7,
+    evergreen: true,
+    fireResistance: 0.9,
+    windthrowResistance: 0.8,
+    springLeafOut: 0.1,
+    autumnLeafDrop: 0.95
   }
 };
 

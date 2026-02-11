@@ -8,6 +8,12 @@ let environmentHistory = {
   water: [],
   stress: []
 };
+let biomassHistory = {
+  trunk: [],
+  branches: [],
+  leaves: [],
+  roots: []
+};
 let uiAnimationFrame = 0;
 
 /**
@@ -97,11 +103,18 @@ function initUI() {
   const speciesSelect = document.getElementById('species');
   if (speciesSelect) {
     speciesSelect.addEventListener('change', function() {
-      if (tree && this.value) {
+      if (tree && this.value && TREE_SPECIES[this.value]) {
         tree.species = this.value;
         updateSpeciesDisplay();
+        resetSimulation();
       }
     });
+  }
+
+  // CSV export button
+  const exportCSVBtn = document.getElementById('exportCSV');
+  if (exportCSVBtn) {
+    exportCSVBtn.addEventListener('click', exportSimulationCSV);
   }
   
   // Keyboard shortcuts
@@ -233,6 +246,8 @@ function updateReadout() {
   const healthClass = getHealthClass(tree.health);
   
   // Core metrics
+  const species = TREE_SPECIES[tree.species] || TREE_SPECIES.OAK;
+  setReadoutValue('rSpecies', species.name);
   setReadoutValue('rYear', environment.year.toFixed(0));
   setReadoutValue('rSeason', getSeasonDisplay());
   setReadoutValue('rAge', formatAge(tree.age));
@@ -420,18 +435,21 @@ function getHealthClass(health) {
  * Initialize advanced multi-line graphs
  */
 function initializeAdvancedGraphs() {
-  // Set up canvas for high-DPI displays
-  const canvas = document.getElementById('healthGraph');
-  if (canvas) {
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
-    canvas.style.width = rect.width + 'px';
-    canvas.style.height = rect.height + 'px';
-  }
+  // Set up canvases for high-DPI displays
+  const canvasIds = ['healthGraph', 'biomassGraph'];
+  canvasIds.forEach(id => {
+    const canvas = document.getElementById(id);
+    if (canvas) {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+    }
+  });
 }
 
 /**
@@ -666,6 +684,7 @@ function resetSimulation() {
   updateEnvironmentTime(0);
   healthHistory = [];
   environmentHistory = { temperature: [], water: [], stress: [] };
+  biomassHistory = { trunk: [], branches: [], leaves: [], roots: [] };
   
   if (window.simulationState) {
     window.simulationState.time = 0;
@@ -677,6 +696,8 @@ function resetSimulation() {
   
   updateReadout();
   drawHealthGraph();
+  drawBiomassGraph();
+  updateSpeciesDisplay();
   
   // Visual feedback
   const canvas = document.getElementById('canvas');
@@ -751,16 +772,23 @@ function getTimeSpeed() {
 function updateSpeciesDisplay() {
   if (!tree || !tree.species) return;
   
-  const speciesInfo = CONFIG?.TREE_SPECIES?.[tree.species];
+  const speciesInfo = TREE_SPECIES[tree.species];
   if (!speciesInfo) return;
   
   const speciesEl = document.getElementById('rSpecies');
   if (speciesEl) {
-    speciesEl.textContent = tree.species;
+    speciesEl.textContent = speciesInfo.name;
   }
-  
-  // Update any species-specific UI hints
-  showToast(`🌳 Now growing: ${tree.species}`);
+
+  const speciesNameEl = document.getElementById('speciesName');
+  if (speciesNameEl) {
+    speciesNameEl.textContent = speciesInfo.name;
+  }
+
+  const scientificEl = document.getElementById('speciesScientific');
+  if (scientificEl) {
+    scientificEl.textContent = speciesInfo.scientificName;
+  }
 }
 
 /**
@@ -814,5 +842,170 @@ function importTreeData(data) {
     showToast('❌ Failed to load save');
     return false;
   }
+}
+
+/**
+ * Update biomass history for graphing
+ */
+function updateBiomassHistory() {
+  if (!tree || !tree.biomass) return;
+  const maxHistory = CONFIG?.MAX_HISTORY || 500;
+  
+  biomassHistory.trunk.push(tree.biomass.trunk);
+  biomassHistory.branches.push(tree.biomass.branches);
+  biomassHistory.leaves.push(tree.biomass.leaves);
+  biomassHistory.roots.push(tree.biomass.roots);
+  
+  if (biomassHistory.trunk.length > maxHistory) {
+    biomassHistory.trunk.shift();
+    biomassHistory.branches.shift();
+    biomassHistory.leaves.shift();
+    biomassHistory.roots.shift();
+  }
+}
+
+/**
+ * Draw biomass breakdown graph (stacked area)
+ */
+function drawBiomassGraph() {
+  const canvas = document.getElementById('biomassGraph');
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  const rect = canvas.getBoundingClientRect();
+  const w = rect.width;
+  const h = rect.height;
+  
+  // Clear with gradient background
+  const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+  bgGrad.addColorStop(0, 'rgba(20, 24, 41, 0.8)');
+  bgGrad.addColorStop(1, 'rgba(10, 12, 20, 0.9)');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, w, h);
+  
+  // Update biomass history
+  if (simulationState.frameCount % 5 === 0) {
+    updateBiomassHistory();
+  }
+  
+  if (biomassHistory.trunk.length < 2) {
+    ctx.fillStyle = 'rgba(156, 163, 175, 0.6)';
+    ctx.font = '11px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('📊 Collecting biomass data...', w / 2, h / 2);
+    return;
+  }
+  
+  const dataLen = biomassHistory.trunk.length;
+  
+  // Find max total for scaling
+  let maxTotal = 1;
+  for (let i = 0; i < dataLen; i++) {
+    const total = biomassHistory.trunk[i] + biomassHistory.branches[i] + 
+                  biomassHistory.leaves[i] + biomassHistory.roots[i];
+    if (total > maxTotal) maxTotal = total;
+  }
+  
+  const series = [
+    { data: biomassHistory.roots, color: 'rgba(139, 90, 43, 0.7)', label: 'Roots' },
+    { data: biomassHistory.trunk, color: 'rgba(101, 67, 33, 0.7)', label: 'Trunk' },
+    { data: biomassHistory.branches, color: 'rgba(160, 120, 60, 0.7)', label: 'Branches' },
+    { data: biomassHistory.leaves, color: 'rgba(34, 197, 94, 0.7)', label: 'Leaves' }
+  ];
+  
+  // Draw stacked areas from bottom to top
+  let previousY = new Array(dataLen).fill(h);
+  
+  for (const s of series) {
+    ctx.beginPath();
+    ctx.fillStyle = s.color;
+    
+    // Top edge
+    for (let i = 0; i < dataLen; i++) {
+      const x = (i / (dataLen - 1)) * w;
+      const value = s.data[i] / maxTotal;
+      const barH = value * h;
+      const y = previousY[i] - barH;
+      
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+      
+      previousY[i] = y;
+    }
+    
+    // Bottom edge (reverse along previous boundary)
+    for (let i = dataLen - 1; i >= 0; i--) {
+      const x = (i / (dataLen - 1)) * w;
+      const value = s.data[i] / maxTotal;
+      const barH = value * h;
+      ctx.lineTo(x, previousY[i] + barH);
+    }
+    
+    ctx.closePath();
+    ctx.fill();
+  }
+  
+  // Legend
+  ctx.font = '8px system-ui';
+  ctx.textAlign = 'left';
+  let lx = 5;
+  for (const s of series) {
+    ctx.fillStyle = s.color;
+    ctx.fillRect(lx, h - 12, 8, 8);
+    ctx.fillStyle = 'rgba(156, 163, 175, 0.7)';
+    ctx.fillText(s.label, lx + 11, h - 5);
+    lx += ctx.measureText(s.label).width + 20;
+  }
+  
+  // Current total label
+  if (tree && tree.biomass) {
+    const total = tree.biomass.trunk + tree.biomass.branches + tree.biomass.leaves + tree.biomass.roots;
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 10px system-ui';
+    ctx.textAlign = 'right';
+    ctx.fillText(total.toFixed(1) + ' kg', w - 5, 12);
+  }
+}
+
+/**
+ * Export simulation data as CSV
+ */
+function exportSimulationCSV() {
+  if (healthHistory.length < 1) {
+    showToast('ℹ️ No data to export yet');
+    return;
+  }
+  
+  const species = TREE_SPECIES[tree.species] || TREE_SPECIES.OAK;
+  let csv = 'Sample,Health,Water,Stress,Biomass_Trunk,Biomass_Branches,Biomass_Leaves,Biomass_Roots\n';
+  
+  const maxLen = Math.max(
+    healthHistory.length,
+    environmentHistory.water.length,
+    environmentHistory.stress.length,
+    biomassHistory.trunk.length
+  );
+  
+  for (let i = 0; i < maxLen; i++) {
+    const health = i < healthHistory.length ? healthHistory[i] : '';
+    const water = i < environmentHistory.water.length ? environmentHistory.water[i].toFixed(1) : '';
+    const stress = i < environmentHistory.stress.length ? environmentHistory.stress[i].toFixed(1) : '';
+    const trunk = i < biomassHistory.trunk.length ? biomassHistory.trunk[i].toFixed(2) : '';
+    const branches = i < biomassHistory.branches.length ? biomassHistory.branches[i].toFixed(2) : '';
+    const leaves = i < biomassHistory.leaves.length ? biomassHistory.leaves[i].toFixed(2) : '';
+    const roots = i < biomassHistory.roots.length ? biomassHistory.roots[i].toFixed(2) : '';
+    csv += `${i},${health},${water},${stress},${trunk},${branches},${leaves},${roots}\n`;
+  }
+  
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `tree_simulation_${species.name.replace(/\s+/g, '_')}_${Date.now()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('📥 CSV exported');
 }
 
