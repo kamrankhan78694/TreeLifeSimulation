@@ -116,7 +116,7 @@ function initUI() {
  * Handle keyboard shortcuts for power users
  */
 function handleKeyboardShortcuts(e) {
-  if (e.target.tagName === 'INPUT') return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   
   switch(e.key.toLowerCase()) {
     case ' ':
@@ -328,10 +328,10 @@ function getDetailedStatusEmoji() {
   if (tree.leafSenescence) return '🍂 Senescence';
   
   // Check stress
-  const totalStress = (environment.stressors?.disease || 0) +
-                      (environment.stressors?.pests || 0) +
-                      (environment.stressors?.storm || 0) +
-                      (environment.stressors?.pollution || 0);
+  const totalStress = (environment.disease ? 1 : 0) +
+                      (environment.pests ? 1 : 0) +
+                      (environment.storm ? 1 : 0) +
+                      (environment.pollution ? 1 : 0);
   
   if (totalStress > 2) return '😫 Stressed';
   if (totalStress > 0) return '😟 Strained';
@@ -655,7 +655,14 @@ function resetSimulation() {
     }
   }
   
+  // Reset stressor checkboxes
+  ['disease', 'pests', 'storm', 'pollution'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.checked = false;
+  });
+
   initializeTree();
+  updateEnvironmentFromUI();
   updateEnvironmentTime(0);
   healthHistory = [];
   environmentHistory = { temperature: [], water: [], stress: [] };

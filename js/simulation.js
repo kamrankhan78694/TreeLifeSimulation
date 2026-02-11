@@ -467,6 +467,16 @@ function updateBiomass(dt, growthFactor) {
 }
 
 /**
+ * Calculate autumn leaf drop rate based on season progress
+ * @param {number} progress - Season progress from 0 to 1
+ * @returns {number} Drop probability (0-1)
+ */
+function getAutumnLeafDropRate(progress) {
+  // Exponential ramp-up: slow at start of autumn, rapid near end
+  return Math.pow(progress, 2) * 0.8;
+}
+
+/**
  * Handle seasonal and stress-related leaf drop
  */
 function handleLeafDrop(dt) {
