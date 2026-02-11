@@ -35,6 +35,11 @@ const renderer = {
   bloomCtx: null
 };
 
+/** Ground-line Y position, proportional to canvas height (850/1200 in the original layout). */
+function getGroundY() {
+  return Math.round(renderer.height * 850 / 1200);
+}
+
 /**
  * Initialize renderer with HDR-capable context
  */
@@ -46,13 +51,22 @@ function initRenderer() {
     desynchronized: true 
   });
   
+  // Size the canvas buffer to match the #sim container so the tree
+  // and ground are always visible regardless of viewport dimensions.
+  const sim = renderer.canvas.parentElement;
+  const displayW = sim.clientWidth;
+  const displayH = sim.clientHeight;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  renderer.canvas.width = renderer.width * renderer.dpi * dpr;
-  renderer.canvas.height = renderer.height * renderer.dpi * dpr;
-  renderer.canvas.style.width = renderer.width + 'px';
-  renderer.canvas.style.height = renderer.height + 'px';
-  
-  renderer.ctx.scale(renderer.dpi * dpr, renderer.dpi * dpr);
+
+  // Update renderer logical size to match container
+  renderer.width = displayW;
+  renderer.height = displayH;
+
+  renderer.canvas.width = displayW * dpr;
+  renderer.canvas.height = displayH * dpr;
+
+  // Let CSS handle display size (width:100%; height:100% in style.css)
+  renderer.ctx.scale(dpr, dpr);
   
   // Create bloom buffer (lower res for performance)
   renderer.bloomBuffer = document.createElement('canvas');
@@ -500,7 +514,7 @@ function drawLightning() {
 function drawDistantHills(season) {
   const ctx = renderer.ctx;
   const w = renderer.width;
-  const groundY = 850;
+  const groundY = getGroundY();
   
   const hillColors = {
     [SEASONS.SPRING.name]: ['rgba(100, 150, 80, 0.4)', 'rgba(80, 130, 60, 0.3)'],
@@ -542,7 +556,7 @@ function drawRealisticGround(season, seasonProgress) {
   const ctx = renderer.ctx;
   const w = renderer.width;
   const h = renderer.height;
-  const groundY = 850;
+  const groundY = getGroundY();
   
   // Get season-specific colors
   const seasonKey = typeof season === 'string' ? season : season.name.toUpperCase();
@@ -767,7 +781,7 @@ function drawDryGround(groundY) {
 function drawDetailedRoots() {
   const ctx = renderer.ctx;
   const centerX = renderer.width / 2;
-  const groundY = 850;
+  const groundY = getGroundY();
   
   const isAlive = tree.health > 0;
   
@@ -1059,7 +1073,7 @@ function drawFineRoots(ctx, x, y, thickness, hue, sat, light, baseAngle) {
 
 function drawHyperrealisticTree(season, seasonProgress) {
   const centerX = renderer.width / 2;
-  const groundY = 850;
+  const groundY = getGroundY();
   
   const treePixelHeight = tree.height * 100;
   const treePixelDBH = tree.dbh * 500;
@@ -1783,7 +1797,7 @@ function drawRealisticRain(seasonProgress) {
 
 function drawRainSplashes(seasonProgress) {
   const ctx = renderer.ctx;
-  const groundY = 850;
+  const groundY = getGroundY();
   const w = renderer.width;
   
   for (let i = 0; i < 30; i++) {
@@ -1830,7 +1844,7 @@ function drawSnowfall(seasonProgress) {
   ctx.shadowBlur = 0;
   
   // Snow accumulation on ground
-  const groundY = 850;
+  const groundY = getGroundY();
   ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
   ctx.fillRect(0, groundY - 5, w, 20);
 }
@@ -1838,7 +1852,7 @@ function drawSnowfall(seasonProgress) {
 function drawMistLayers() {
   const ctx = renderer.ctx;
   const w = renderer.width;
-  const groundY = 850;
+  const groundY = getGroundY();
   
   const mistIntensity = (environment.humidity - 60) / 40;
   

@@ -1,0 +1,27 @@
+{
+  "name": "treelifesimulation",
+  "version": "1.0.0",
+  "description": "A modular, vanilla HTML/CSS/JS single-page simulation of a tree’s life over time. It models seasonal cycles, weather + stressors, physiology (growth, respiration, carbon balance, phenology), and renders the scene with HDR-like post effects on a 2D canvas.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kamrankhan78694/TreeLifeSimulation.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kamrankhan78694/TreeLifeSimulation/issues"
+  },
+  "homepage": "https://github.com/kamrankhan78694/TreeLifeSimulation#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}
