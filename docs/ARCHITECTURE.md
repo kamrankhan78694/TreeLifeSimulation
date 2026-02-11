@@ -404,8 +404,8 @@ These are Phase 1 constraints that inform the Phase 2 roadmap (see [PHASE2_ROADM
 
 | Area | Limitation |
 |------|------------|
-| **Single tree** | Only one tree is simulated; no forest/ecosystem interactions. |
-| **No spatial model** | The tree exists at a dimensionless "site" — no neighbors, no light competition, no spatial root zones. |
+| **Single tree** | Only one tree is simulated; this is intentional to keep memory usage low. |
+| **No spatial model** | The tree exists at a dimensionless "site" — no spatial root zones or light competition grid. |
 | **Simplified weather** | Weather is stochastic per-frame rather than driven by a coherent climate model. |
 | **No soil model** | Soil quality is a single slider value, not a layered profile with nutrients, pH, or microbial activity. |
 | **Canvas 2D only** | Rendering is CPU-bound; no GPU acceleration via WebGL/WebGPU. |

@@ -8,7 +8,7 @@ A modular, vanilla HTML/CSS/JS single-page simulation of a tree’s life over ti
 
 For detailed technical documentation of the current architecture, see **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
 
-For the Phase 2 feature roadmap (multi-tree ecosystems, WebGL rendering, testing, and more), see **[docs/PHASE2_ROADMAP.md](docs/PHASE2_ROADMAP.md)**.
+For the Phase 2 feature roadmap (deeper single-tree biology, WebGL rendering, testing, and more), see **[docs/PHASE2_ROADMAP.md](docs/PHASE2_ROADMAP.md)**.
 
 ## Quickstart
 
