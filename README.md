@@ -2,6 +2,14 @@
 
 A modular, vanilla HTML/CSS/JS single-page simulation of a tree’s life over time. It models seasonal cycles, weather + stressors, physiology (growth, respiration, carbon balance, phenology), and renders the scene with HDR-like post effects on a 2D canvas.
 
+## Project status
+
+**Phase 1 — Complete.** The single-tree lifecycle simulation is fully functional with seasonal cycles, weather dynamics, biotic/abiotic stressors, allometric growth, carbon-balance physiology, mortality modeling, and HDR-like Canvas 2D rendering.
+
+For detailed technical documentation of the current architecture, see **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
+
+For the Phase 2 feature roadmap (multi-tree ecosystems, WebGL rendering, testing, and more), see **[docs/PHASE2_ROADMAP.md](docs/PHASE2_ROADMAP.md)**.
+
 ## Quickstart
 
 Because the app loads multiple JS files, run it from a local web server (not `file://`).
@@ -25,6 +33,9 @@ Notes:
 ├── variables.JSON
 ├── css/
 │   └── style.css
+├── docs/
+│   ├── ARCHITECTURE.md
+│   └── PHASE2_ROADMAP.md
 └── js/
     ├── config.js
     ├── environment.js
