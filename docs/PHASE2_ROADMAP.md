@@ -261,8 +261,8 @@ Phase 2 keeps the single `tree` object. Changes are additive:
 
 A design constraint for Phase 2: the simulation should remain comfortable on devices with ≤ 4 GB RAM. Guidelines:
 
-- **One tree only** — no `trees[]` array; the single `tree` object stays under ~2 MB including all geometry arrays.
-- **Bounded history** — health/environment history arrays are capped (e.g., 10 000 samples) and oldest entries are dropped.
+- **One tree only** — no `trees[]` array; the single `tree` object stays under ~2 MB including all geometry arrays (branches, leaf clusters, individual leaves, root mesh, bark segments, and leaf-drop particles).
+- **Bounded history** — health/environment history arrays are capped (e.g., 10 000 samples, roughly 100 simulated years at one sample per ~4 simulated days) and oldest entries are dropped.
 - **Texture reuse** — bark, leaf, and sky textures are cached and reused rather than regenerated each frame.
 - **Particle pools** — rain, snow, and leaf-drop particles use fixed-size pools, not unbounded lists.
 
