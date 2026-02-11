@@ -194,7 +194,7 @@
 
 ### 6.1 Guided scenarios
 
-- Pre-built lessons (e.g., "What happens during a drought?", "How does deforestation start?").
+- Pre-built lessons (e.g., "What happens during a drought", "How does deforestation start").
 - Step-by-step annotations that explain what the simulation is doing and why.
 
 ### 6.2 Ecological fact cards

@@ -350,7 +350,7 @@ Loaded at startup; safe no-op if missing. Sections:
 - `ui_defaults` — initial slider positions
 - `stressors` — threshold values
 - `canvas_settings` — dimensions and background
-- `hdr_parameters` — age/mortality overrides
+- `hdr_parameters` — despite the name, contains age and mortality settings (max age, senescence start, base mortality rate)
 - `config_overrides` — simulation speed, mortality toggle
 
 Can also be edited live via the Config textarea in the UI and applied with `applyVariablesConfigFromObject()`.
