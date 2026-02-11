@@ -150,6 +150,12 @@ const CONFIG = {
   GRASS_HEIGHT_MAX: 25,
   GROUND_TEXTURE_DETAIL: 3,
   SOIL_LAYERS: 4,
+
+  // === DISTURBANCE THRESHOLDS ===
+  FIRE_DROUGHT_THRESHOLD: 0.2,
+  FIRE_HEAT_THRESHOLD: 30,
+  WINDTHROW_WIND_THRESHOLD: 60,
+  WINDTHROW_WIND_RANGE: 40,
 };
 
 // ============================================================

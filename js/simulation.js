@@ -182,16 +182,16 @@ function applyMortalityModel(dtDays) {
   // Fire hazard: probability based on drought duration and species resistance
   const species = TREE_SPECIES[tree.species] || TREE_SPECIES.OAK;
   const fireResistance = species.fireResistance || 0.5;
-  if (water01 < 0.2 && environment.temperature > 30) {
-    const droughtSeverity = (0.2 - water01) / 0.2;
-    const heatSeverity = clamp((environment.temperature - 30) / 20, 0, 1);
+  if (water01 < CONFIG.FIRE_DROUGHT_THRESHOLD && environment.temperature > CONFIG.FIRE_HEAT_THRESHOLD) {
+    const droughtSeverity = (CONFIG.FIRE_DROUGHT_THRESHOLD - water01) / CONFIG.FIRE_DROUGHT_THRESHOLD;
+    const heatSeverity = clamp((environment.temperature - CONFIG.FIRE_HEAT_THRESHOLD) / 20, 0, 1);
     hazardPerYear += 0.05 * droughtSeverity * heatSeverity * (1 - fireResistance);
   }
 
   // Windthrow hazard: tall/large trees more vulnerable during storms
   const windthrowResistance = species.windthrowResistance || 0.5;
-  if (environment.storm && environment.windSpeed > 60) {
-    const windSeverity = clamp((environment.windSpeed - 60) / 40, 0, 1);
+  if (environment.storm && environment.windSpeed > CONFIG.WINDTHROW_WIND_THRESHOLD) {
+    const windSeverity = clamp((environment.windSpeed - CONFIG.WINDTHROW_WIND_THRESHOLD) / CONFIG.WINDTHROW_WIND_RANGE, 0, 1);
     const sizeFactor = clamp(tree.height / (species.maxHeight || 40), 0, 1);
     hazardPerYear += 0.06 * windSeverity * sizeFactor * (1 - windthrowResistance);
   }
@@ -201,9 +201,9 @@ function applyMortalityModel(dtDays) {
   if (random() < pDie) {
     tree.health = 0;
     // Determine most likely cause
-    if (environment.storm && environment.windSpeed > 60) {
+    if (environment.storm && environment.windSpeed > CONFIG.WINDTHROW_WIND_THRESHOLD) {
       tree.deathCause = 'Windthrow';
-    } else if (water01 < 0.2 && environment.temperature > 30) {
+    } else if (water01 < CONFIG.FIRE_DROUGHT_THRESHOLD && environment.temperature > CONFIG.FIRE_HEAT_THRESHOLD) {
       tree.deathCause = 'Fire';
     } else if (environment.disease) {
       tree.deathCause = 'Disease';
@@ -593,7 +593,8 @@ function updateFoliage(dt) {
         targetOpacity *= 0.8;
         targetDensity *= 0.85;
       } else {
-        // Gradual leaf loss — species dropRate controls timing
+        // Gradual leaf loss — species dropRate controls how late leaves are retained
+        // Lower autumnLeafDrop means earlier/faster shedding
         const dropRate = species.autumnLeafDrop || 0.5;
         const autumnFade = 1 - Math.pow(seasonProgress, 1.5) * (1 - dropRate * 0.3);
         targetOpacity *= autumnFade;
