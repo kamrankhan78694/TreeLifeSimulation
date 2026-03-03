@@ -10,6 +10,8 @@ For detailed technical documentation of the current architecture, see **[docs/AR
 
 For the Phase 2 feature roadmap (deeper single-tree biology, WebGL rendering, testing, and more), see **[docs/PHASE2_ROADMAP.md](docs/PHASE2_ROADMAP.md)**.
 
+For a full history of notable changes, see **[CHANGELOG.md](CHANGELOG.md)**.
+
 ## Quickstart
 
 Because the app loads multiple JS files, run it from a local web server (not `file://`).
