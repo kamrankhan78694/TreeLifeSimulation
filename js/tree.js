@@ -506,7 +506,7 @@ function createLeafDrop(x, y, color) {
     y: y,
     vx: random(-1, 1),
     vy: random(0.5, 2),
-    color: color || tree.season?.foliageColor || '#228B22',
+    color: color || '#228B22',
     rotation: random(0, Math.PI * 2),
     rotationSpeed: random(-0.1, 0.1),
     size: random(2, 8),
