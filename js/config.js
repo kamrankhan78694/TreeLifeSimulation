@@ -190,8 +190,7 @@ const SEASONS = {
     skyBottomDay: '#c9e4f7',
     skyTopNight: '#0d1b2a',
     skyBottomNight: '#1b3a4b',
-    // Sky HSL for atmospheric rendering
-    sky: { topHSL: [206, 62, 60], midHSL: [206, 65, 75], horizonHSL: [205, 74, 88] },
+    sky: { topHSL: [206, 62, 60], midHSL: [206, 65, 75], horizonHSL: [205, 74, 88] },  // HSL for atmospheric sky rendering
     // Environment
     ambientTemp: 14,
     humidity: 65,
@@ -205,9 +204,8 @@ const SEASONS = {
     grassColor: '#4ade80',
     groundColor: '#5c4827',
     fogColor: 'rgba(200, 220, 255, 0.15)',
-    // Ground HSL for terrain rendering
-    grass: { baseHSL: [142, 69, 58] },
-    soil: { baseHSL: [37, 40, 26] },
+    grass: { baseHSL: [142, 69, 58] },  // HSL for grass terrain rendering
+    soil: { baseHSL: [37, 40, 26] },    // HSL for soil terrain rendering
   },
   SUMMER: { 
     name: 'Summer', 
