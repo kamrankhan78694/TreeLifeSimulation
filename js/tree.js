@@ -497,22 +497,6 @@ function calculateLAI() {
   return crownProjectionArea > 0 ? tree.leafArea / crownProjectionArea : 0;
 }
 
-/**
- * Create a falling leaf particle
- */
-function createLeafDrop(x, y, color) {
-  tree.leafDrops.push({
-    x: x,
-    y: y,
-    vx: random(-1, 1),
-    vy: random(0.5, 2),
-    color: color || '#228B22',
-    rotation: random(0, Math.PI * 2),
-    rotationSpeed: random(-0.1, 0.1),
-    size: random(2, 8),
-    opacity: 1,
-    lifetime: 30
-  });
-}
+
 
 
