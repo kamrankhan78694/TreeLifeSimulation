@@ -190,6 +190,7 @@ const SEASONS = {
     skyBottomDay: '#c9e4f7',
     skyTopNight: '#0d1b2a',
     skyBottomNight: '#1b3a4b',
+    sky: { topHSL: [206, 62, 60], midHSL: [206, 65, 75], horizonHSL: [205, 74, 88] },  // HSL for atmospheric sky rendering
     // Environment
     ambientTemp: 14,
     humidity: 65,
@@ -203,6 +204,8 @@ const SEASONS = {
     grassColor: '#4ade80',
     groundColor: '#5c4827',
     fogColor: 'rgba(200, 220, 255, 0.15)',
+    grass: { baseHSL: [142, 69, 58] },  // HSL for grass terrain rendering
+    soil: { baseHSL: [37, 40, 26] },    // HSL for soil terrain rendering
   },
   SUMMER: { 
     name: 'Summer', 
@@ -215,6 +218,7 @@ const SEASONS = {
     skyBottomDay: '#87ceeb',
     skyTopNight: '#0a1628',
     skyBottomNight: '#162d50',
+    sky: { topHSL: [203, 77, 45], midHSL: [200, 74, 59], horizonHSL: [197, 71, 73] },
     ambientTemp: 26,
     humidity: 55,
     rainfall: 35,
@@ -225,6 +229,8 @@ const SEASONS = {
     grassColor: '#22c55e',
     groundColor: '#6b4423',
     fogColor: 'rgba(255, 250, 240, 0.08)',
+    grass: { baseHSL: [142, 71, 45] },
+    soil: { baseHSL: [27, 51, 28] },
   },
   AUTUMN: { 
     name: 'Autumn', 
@@ -237,6 +243,7 @@ const SEASONS = {
     skyBottomDay: '#d4a574',
     skyTopNight: '#1a1a2e',
     skyBottomNight: '#2d2d44',
+    sky: { topHSL: [211, 13, 48], midHSL: [220, 18, 55], horizonHSL: [31, 53, 64] },
     ambientTemp: 11,
     humidity: 70,
     rainfall: 55,
@@ -247,6 +254,8 @@ const SEASONS = {
     grassColor: '#b8860b',
     groundColor: '#8b4513',
     fogColor: 'rgba(180, 160, 140, 0.2)',
+    grass: { baseHSL: [43, 89, 38] },
+    soil: { baseHSL: [25, 76, 31] },
   },
   WINTER: { 
     name: 'Winter', 
@@ -259,6 +268,7 @@ const SEASONS = {
     skyBottomDay: '#94a3b8',
     skyTopNight: '#0f0f1a',
     skyBottomNight: '#1a1a2e',
+    sky: { topHSL: [218, 17, 35], midHSL: [216, 18, 50], horizonHSL: [215, 20, 65] },
     ambientTemp: 1,
     humidity: 80,
     rainfall: 75,
@@ -269,6 +279,8 @@ const SEASONS = {
     grassColor: '#c8d6e5',
     groundColor: '#576574',
     fogColor: 'rgba(220, 230, 245, 0.25)',
+    grass: { baseHSL: [211, 36, 84] },
+    soil: { baseHSL: [211, 14, 40] },
   }
 };
 

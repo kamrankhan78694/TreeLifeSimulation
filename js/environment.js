@@ -95,20 +95,6 @@ function updateEnvironmentTime(dt) {
 }
 
 /**
- * Get current season as display string
- * @returns {string} Season name
- */
-function getSeasonDisplay() {
-  const seasons = {
-    [SEASONS.SPRING]: '🌱 Spring',
-    [SEASONS.SUMMER]: '☀️ Summer',
-    [SEASONS.AUTUMN]: '🍂 Autumn',
-    [SEASONS.WINTER]: '❄️ Winter'
-  };
-  return seasons[environment.season] || 'Unknown';
-}
-
-/**
  * Get season progress (0-1) within current season
  * @param {number} dayOfYear - Current day of year
  * @returns {number} Progress from 0 to 1
@@ -136,6 +122,5 @@ function getSeasonalGrowthMultiplier(season) {
 
 // Make functions globally accessible
 window.updateEnvironmentTime = updateEnvironmentTime;
-window.getSeasonDisplay = getSeasonDisplay;
 window.getSeasonProgress = getSeasonProgress;
 window.getSeasonalGrowthMultiplier = getSeasonalGrowthMultiplier;

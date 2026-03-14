@@ -185,11 +185,9 @@ function drawAtmosphericSky(dayOfYear, season, seasonProgress) {
   const sunHeight = Math.sin(dayProgress * Math.PI);
   
   // Get season-specific sky colors
-  const seasonKey = typeof season === 'string' ? season : season.name.toUpperCase();
-  const seasonDef = SEASON_DEFINITIONS[seasonKey];
-  const skyTop = seasonDef?.sky?.topHSL || [210, 60, 70];
-  const skyMid = seasonDef?.sky?.midHSL || [200, 50, 80];
-  const skyBot = seasonDef?.sky?.horizonHSL || [30, 50, 85];
+  const skyTop = season?.sky?.topHSL || [210, 60, 70];
+  const skyMid = season?.sky?.midHSL || [200, 50, 80];
+  const skyBot = season?.sky?.horizonHSL || [30, 50, 85];
   
   // Adjust for time of day
   const nightDarken = Math.max(0, 1 - sunHeight * 2);
@@ -559,10 +557,8 @@ function drawRealisticGround(season, seasonProgress) {
   const groundY = getGroundY();
   
   // Get season-specific colors
-  const seasonKey = typeof season === 'string' ? season : season.name.toUpperCase();
-  const seasonDef = SEASON_DEFINITIONS[seasonKey];
-  const grassHSL = seasonDef?.grass?.baseHSL || [120, 50, 40];
-  const soilHSL = seasonDef?.soil?.baseHSL || [25, 60, 25];
+  const grassHSL = season?.grass?.baseHSL || [120, 50, 40];
+  const soilHSL = season?.soil?.baseHSL || [25, 60, 25];
   
   // === GRASS LAYER ===
   const grassGrad = ctx.createLinearGradient(0, groundY, 0, groundY + 60);

@@ -294,25 +294,18 @@ function setReadoutValue(id, value, className) {
 }
 
 /**
- * Get enhanced season display with weather
+ * Get enhanced season display with emoji
  */
 function getSeasonDisplay() {
-  let display = environment.season.name;
-  
-  if (environment.weatherType) {
-    const weatherIcons = {
-      'CLEAR': '☀️',
-      'CLOUDY': '☁️',
-      'RAIN': '🌧️',
-      'STORM': '⛈️',
-      'SNOW': '❄️',
-      'FOGGY': '🌫️',
-      'DROUGHT': '🔥'
-    };
-    display += ' ' + (weatherIcons[environment.weatherType] || '');
-  }
-  
-  return display;
+  const seasonEmojis = {
+    'Spring': '🌱',
+    'Summer': '☀️',
+    'Autumn': '🍂',
+    'Winter': '❄️'
+  };
+  const name = environment.season.name;
+  const emoji = seasonEmojis[name] || '';
+  return emoji + ' ' + name;
 }
 
 /**
@@ -352,7 +345,7 @@ function getDetailedStatusEmoji() {
   if (totalStress > 0) return '😟 Strained';
   
   // Check conditions
-  if (tree.health > 90 && tree.vigor > 0.8) return '🌳 Thriving!';
+  if (tree.health > 90 && tree.vigor > 80) return '🌳 Thriving!';
   if (tree.health > 75) return '😊 Healthy';
   if (tree.health > 50) return '😐 Stable';
   return '😕 Struggling';
@@ -364,7 +357,7 @@ function getDetailedStatusEmoji() {
 function updateAdvancedMetrics() {
   // Vigor
   if (tree.vigor !== undefined) {
-    setReadoutValue('rVigor', (tree.vigor * 100).toFixed(0) + '%');
+    setReadoutValue('rVigor', tree.vigor.toFixed(0) + '%');
   }
   
   // Crown metrics
@@ -373,8 +366,8 @@ function updateAdvancedMetrics() {
   }
   
   // Leaf area index
-  if (typeof tree.calculateLAI === 'function') {
-    setReadoutValue('rLAI', tree.calculateLAI().toFixed(2));
+  if (typeof calculateLAI === 'function') {
+    setReadoutValue('rLAI', calculateLAI().toFixed(2));
   }
   
   // Carbon stored
@@ -383,15 +376,8 @@ function updateAdvancedMetrics() {
   }
   
   // Growth rings
-  if (tree.growthRings !== undefined) {
-    setReadoutValue('rRings', tree.growthRings.length);
-  }
-  
-  // Water stress
-  if (environment.waterStress !== undefined) {
-    const stressLevel = environment.waterStress > 0.7 ? 'critical' :
-                        environment.waterStress > 0.4 ? 'stressed' : 'healthy';
-    setReadoutValue('rWaterStress', (environment.waterStress * 100).toFixed(0) + '%', stressLevel);
+  if (tree.ringsGrown !== undefined) {
+    setReadoutValue('rRings', tree.ringsGrown);
   }
 }
 
@@ -810,7 +796,7 @@ function exportTreeData() {
       biomass: tree.biomass,
       co2Absorbed: tree.co2Absorbed,
       o2Produced: tree.o2Produced,
-      growthRings: tree.growthRings
+      growthRings: tree.ringsGrown
     },
     environment: {
       year: environment.year,
